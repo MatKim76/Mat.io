@@ -2,7 +2,7 @@ import java.io.IOException;
 /*
  * Main.java
  *
- * Created on 21 ãÇÑÓ, 2008, 02:19 ã
+ * Created on 21 ï¿½ï¿½ï¿½ï¿½, 2008, 02:19 ï¿½
  *
  * To change this template, choose Tools | Template Manager
  * and open the template in the editor.
@@ -12,10 +12,10 @@ import java.io.IOException;
  *
  * @author Mohamed Talaat Saad
  */
-public class Main {
+public class MainServer {
     
     /** Creates a new instance of Main */
-    public Main() {
+    public MainServer() {
     }
     
     public static void main(String args[]) throws IOException

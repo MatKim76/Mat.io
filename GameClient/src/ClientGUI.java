@@ -16,7 +16,7 @@ import javax.swing.JTextField;
 /*
  * ClientGUI.java
  *
- * Created on 21 ãÇÑÓ, 2008, 02:26 ã
+ * Created on 21 ï¿½ï¿½ï¿½ï¿½, 2008, 02:26 ï¿½
  *
  * To change this template, choose Tools | Template Manager
  * and open the template in the editor.
@@ -43,7 +43,7 @@ public class ClientGUI extends JFrame implements ActionListener,WindowListener
     private JPanel registerPanel;
     public static JPanel gameStatusPanel;
     private Client client;
-    private Tank clientTank;
+    private Joueur clientJoueur;
     
     private static int score;
     
@@ -106,9 +106,12 @@ public class ClientGUI extends JFrame implements ActionListener,WindowListener
         gameStatusPanel.add(scoreLabel);
             
         client=Client.getGameClient();
-         
-        clientTank=new Tank();
-        boardPanel=new GameBoardPanel(clientTank,client,false);
+
+        clientJoueur = new Joueur(1, "a", Color.WHITE);
+        boardPanel=new GameBoardPanel(clientJoueur,client,false);
+        
+        /*clientTank=new Tank();
+        boardPanel=new GameBoardPanel(clientTank,client,false);*/
         
         getContentPane().add(registerPanel);        
         getContentPane().add(gameStatusPanel);
@@ -138,8 +141,8 @@ public class ClientGUI extends JFrame implements ActionListener,WindowListener
             
             try 
             {
-                 client.register(ipaddressText.getText(),Integer.parseInt(portText.getText()),clientTank.getXposition(),clientTank.getYposition());
-                 soundManger=new SoundManger();
+                 client.register(ipaddressText.getText(),Integer.parseInt(portText.getText()),clientJoueur.getX(),clientJoueur.getY());
+                 //soundManger=new SoundManger();
                  boardPanel.setGameStatus(true);
                  boardPanel.repaint();
                 try {
@@ -171,7 +174,7 @@ public class ClientGUI extends JFrame implements ActionListener,WindowListener
        // int response=JOptionPane.showConfirmDialog(this,"Are you sure you want to exit ?","Tanks 2D Multiplayer Game!",JOptionPane.YES_NO_OPTION);
         
      
-     Client.getGameClient().sendToServer(new Protocol().ExitMessagePacket(clientTank.getTankID()));
+     Client.getGameClient().sendToServer(new MessageClient().ExitMessagePacket(clientJoueur.getId()));
         
         
     }
@@ -218,42 +221,43 @@ public class ClientGUI extends JFrame implements ActionListener,WindowListener
                if(sentence.startsWith("ID"))
                {
                     int id=Integer.parseInt(sentence.substring(2));
-                    clientTank.setTankID(id);
+                    clientJoueur.setId(id);
                     System.out.println("My ID= "+id);
-                    
                }
                else if(sentence.startsWith("NewClient"))
                {
                     int pos1=sentence.indexOf(',');
-                    int pos2=sentence.indexOf('-');
+                    //int pos2=sentence.indexOf('-');
                     int pos3=sentence.indexOf('|');
                     int x=Integer.parseInt(sentence.substring(9,pos1));
-                    int y=Integer.parseInt(sentence.substring(pos1+1,pos2));
-                    int dir=Integer.parseInt(sentence.substring(pos2+1,pos3));
+                    int y=Integer.parseInt(sentence.substring(pos1+1,pos3));
+                    //int dir=Integer.parseInt(sentence.substring(pos2+1,pos3));
                     int id=Integer.parseInt(sentence.substring(pos3+1,sentence.length()));
-                    if(id!=clientTank.getTankID())
-                        boardPanel.registerNewTank(new Tank(x,y,dir,id));
+                    if(id!=clientJoueur.getId())
+                        boardPanel.registerNewTank(new Joueur(id, "a", clientJoueur.getCouleur() ));
+
+                    System.out.println("new Client " + id);
                }   
                else if(sentence.startsWith("Update"))
                {
                     int pos1=sentence.indexOf(',');
-                    int pos2=sentence.indexOf('-');
+                    //int pos2=sentence.indexOf('-');
                     int pos3=sentence.indexOf('|');
                     int x=Integer.parseInt(sentence.substring(6,pos1));
-                    int y=Integer.parseInt(sentence.substring(pos1+1,pos2));
-                    int dir=Integer.parseInt(sentence.substring(pos2+1,pos3));
+                    int y=Integer.parseInt(sentence.substring(pos1+1,pos3));
+                    //int dir=Integer.parseInt(sentence.substring(pos2+1,pos3));
                     int id=Integer.parseInt(sentence.substring(pos3+1,sentence.length()));
                 
-                    if(id!=clientTank.getTankID())
+                    if(id!=clientJoueur.getId())
                     {
-                        boardPanel.getTank(id).setXpoistion(x);
-                        boardPanel.getTank(id).setYposition(y);
-                        boardPanel.getTank(id).setDirection(dir);
+                        boardPanel.getTank(id).setX(x);
+                        boardPanel.getTank(id).setY(y);
+                        //boardPanel.getTank(id).setDirection(dir);
                         boardPanel.repaint();
                     }
                     
                }
-               else if(sentence.startsWith("Shot"))
+               /*else if(sentence.startsWith("Shot"))
                {
                     int id=Integer.parseInt(sentence.substring(4));
                 
@@ -262,12 +266,12 @@ public class ClientGUI extends JFrame implements ActionListener,WindowListener
                         boardPanel.getTank(id).Shot();
                     }
                     
-               }
+               }*/
                else if(sentence.startsWith("Remove"))
                {
                   int id=Integer.parseInt(sentence.substring(6));
                   
-                  if(id==clientTank.getTankID())
+                  if(id==clientJoueur.getId())
                   {
                         int response=JOptionPane.showConfirmDialog(null,"Sorry, You are loss. Do you want to try again ?","Tanks 2D Multiplayer Game",JOptionPane.OK_CANCEL_OPTION);
                         if(response==JOptionPane.OK_OPTION)
@@ -292,7 +296,7 @@ public class ClientGUI extends JFrame implements ActionListener,WindowListener
                {
                    int id=Integer.parseInt(sentence.substring(4));
                   
-                  if(id!=clientTank.getTankID())
+                  if(id!=clientJoueur.getId())
                   {
                       boardPanel.removeTank(id);
                   }

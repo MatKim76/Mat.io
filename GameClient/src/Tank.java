@@ -5,7 +5,7 @@ import javax.swing.ImageIcon;
 /*
  * Tank.java
  *
- * Created on 24 ãÇÑÓ, 2008, 11:36 Õ
+ * Created on 24 ï¿½ï¿½ï¿½ï¿½, 2008, 11:36 ï¿½
  *
  * To change this template, choose Tools | Template Manager
  * and open the template in the editor.
@@ -56,7 +56,9 @@ public class Tank {
         tankImg=new Image[4];
         for(int i=a;i<tankImg.length+a;i++)
         {
-            tankImg[i-a]=new ImageIcon("Images/"+i+".png").getImage();
+            //tankImg[i-a]=new ImageIcon("Images/"+i+".png").getImage(); //java cmd
+
+            tankImg[i-a]=new ImageIcon("./GameClient/Images/"+i+".png").getImage(); //vscode
         }
         
         ImageBuff=new BufferedImage(tankImg[direction-1].getWidth(null),tankImg[direction-1].getHeight(null),BufferedImage.TYPE_INT_RGB);
@@ -217,15 +219,17 @@ public class Tank {
         curBomb++;
     
     }
+
+    //TODO refaire
     public boolean checkCollision(int xP,int yP)
     {
-        ArrayList<Tank>clientTanks=GameBoardPanel.getClients();
+        ArrayList<Joueur>clientTanks=GameBoardPanel.getClients();
         int x,y;
         for(int i=1;i<clientTanks.size();i++) {
             if(clientTanks.get(i)!=null) 
             {
-                x=clientTanks.get(i).getXposition();
-                y=clientTanks.get(i).getYposition();
+                x=clientTanks.get(i).getX();
+                y=clientTanks.get(i).getY();
                 if(direction==1)
                 {       
                     if(((yP<=y+43)&&yP>=y)&&((xP<=x+43&&xP>=x)||(xP+43>=x&&xP+43<=x+43))) 

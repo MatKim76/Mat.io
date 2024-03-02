@@ -1,7 +1,7 @@
 /*
  * Protocol.java
  *
- * Created on 25 ãÇÑÓ, 2008, 10:32 ã
+ * Created on 25 ï¿½ï¿½ï¿½ï¿½, 2008, 10:32 ï¿½
  *
  * To change this template, choose Tools | Template Manager
  * and open the template in the editor.
@@ -11,14 +11,14 @@
  *
  * @author Mohamed Talaat Saad
  */
-public class Protocol {
+public class MessageClient {
     
     
     /**
      * Creates a new instance of Protocol
      */
     private String message="";
-    public Protocol() 
+    public MessageClient() 
     {
         
     }
@@ -47,6 +47,13 @@ public class Protocol {
     public String ExitMessagePacket(int id)
     {
         message="Exit"+id;
+        return message;
+    }
+
+    //new methodes
+    public String UpdatePacket (int x,int y,int id)
+    {
+        message="Update"+x+","+y+"|"+id;
         return message;
     }
 }

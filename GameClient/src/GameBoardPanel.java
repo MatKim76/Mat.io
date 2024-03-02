@@ -2,18 +2,13 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Rectangle2D;
-import java.awt.image.ImageObserver;
-import java.awt.image.ImageProducer;
 import java.util.ArrayList;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 /*
  * GameBoardPanel.java
  *
- * Created on 25 ãÇÑÓ, 2008, 09:21 ã
+ * Created on 25 ï¿½ï¿½ï¿½ï¿½, 2008, 09:21 ï¿½
  *
  * To change this template, choose Tools | Template Manager
  * and open the template in the editor.
@@ -26,25 +21,27 @@ import javax.swing.JPanel;
 public class GameBoardPanel extends JPanel {
     
     /** Creates a new instance of GameBoardPanel */
-    private Tank tank;
+    private Joueur joueur;
     private int width=609;
     private int height=523;
-    private static ArrayList<Tank> tanks;
+    private ArrayList<Joueur> joueurs;
     private boolean gameStatus;
-    public GameBoardPanel(Tank tank,Client client, boolean gameStatus) 
+
+
+    public GameBoardPanel(Joueur joueur,Client client, boolean gameStatus) 
     {
-        this.tank=tank;
-        this.gameStatus=gameStatus;
+        this.joueur = joueur;
+        this.gameStatus = gameStatus;
         setSize(width,height);
         setBounds(-50,0,width,height);
-        addKeyListener(new InputManager(tank));
+        addKeyListener(new InputManager(joueur));
         setFocusable(true);
         
-        tanks=new ArrayList<Tank>(100);
+        joueurs = new ArrayList<Joueur>(100);
         
         for(int i=0;i<100;i++)
         {
-            tanks.add(null);
+            joueurs.add(null);
         }
    
     }
@@ -57,14 +54,18 @@ public class GameBoardPanel extends JPanel {
         
         g.setColor(Color.GREEN);
         g.fillRect(70,50, getWidth()-100,getHeight());
-        g.drawImage(new ImageIcon("Images/bg.jpg").getImage(),70,50,null);
+        //g.drawImage(new ImageIcon("Images/bg.jpg").getImage(),70,50,null);
         g.setColor(Color.YELLOW);
         g.setFont(new Font("Comic Sans MS",Font.BOLD,25));
         g.drawString("Tanks 2D Multiplayers Game",255,30);
         if(gameStatus) 
         {
-            g.drawImage(tank.getBuffImage(),tank.getXposition(),tank.getYposition(),this);
-            for(int j=0;j<1000;j++)
+            //g.drawImage(tank.getBuffImage(),tank.getXposition(),tank.getYposition(),this);
+            g.setColor(joueur.getCouleur());
+            g.fillRect(joueur.getX(), joueur.getY(), joueur.getTaille(), joueur.getTaille());
+            //TODO afficher bouclier
+
+            /*for(int j=0;j<1000;j++)
             {
                 if(tank.getBomb()[j]!=null) 
                 {
@@ -72,13 +73,18 @@ public class GameBoardPanel extends JPanel {
                         g.drawImage(tank.getBomb()[j].getBomBufferdImg(),tank.getBomb()[j].getPosiX(),tank.getBomb()[j].getPosiY(),this);
                     }
                 }
-            }
-            for(int i=1;i<tanks.size();i++) 
+            }*/
+            for(int i=1;i<joueurs.size();i++) 
             {
-                if(tanks.get(i)!=null)
-                    g.drawImage(tanks.get(i).getBuffImage(),tanks.get(i).getXposition(),tanks.get(i).getYposition(),this);
+                if(joueurs.get(i)!=null)
+                {
+                    g.setColor(joueur.getCouleur());
+                    g.fillRect(joueurs.get(i).getX(), joueurs.get(i).getY(), joueurs.get(i).getTaille(), joueurs.get(i).getTaille());
+                }
+                    
+                    //g.drawImage(tanks.get(i).getBuffImage(),tanks.get(i).getXposition(),tanks.get(i).getYposition(),this);
                 
-                for(int j=0;j<1000;j++)
+                /*for(int j=0;j<1000;j++)
                 {
                     if(tanks.get(i)!=null)
                     {
@@ -89,7 +95,7 @@ public class GameBoardPanel extends JPanel {
                             }
                         }
                     }
-                }
+                }*/
             }
 
         }
@@ -97,25 +103,26 @@ public class GameBoardPanel extends JPanel {
         repaint();
     }
 
-    public void registerNewTank(Tank newTank)
+    //renommer les machins
+    public void registerNewTank(Joueur newTank)
     {
-        tanks.set(newTank.getTankID(),newTank);
+        joueurs.set(newTank.getId(),newTank);
     }
     public void removeTank(int tankID)
     {
-        tanks.set(tankID,null);
+        joueurs.set(tankID,null);
     }
-    public Tank getTank(int id)
+    public Joueur getTank(int id)
     {
-        return tanks.get(id);
+        return joueurs.get(id);
     }
     public void setGameStatus(boolean status)
     {
         gameStatus=status;
     }
   
-    public static ArrayList<Tank> getClients()
+    public static ArrayList<Joueur> getClients()
     {
-        return tanks;
+        return joueurs;
     }
 }

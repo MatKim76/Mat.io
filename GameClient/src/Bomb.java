@@ -7,7 +7,7 @@ import javax.swing.ImageIcon;
 /*
  * Bomb.java
  *
- * Created on 29 ãÇÑÓ, 2008, 06:20 ã
+ * Created on 29 ï¿½ï¿½ï¿½ï¿½, 2008, 06:20 ï¿½
  *
  * To change this template, choose Tools | Template Manager
  * and open the template in the editor.
@@ -90,7 +90,7 @@ public class Bomb {
                         ex.printStackTrace();
                     }
                     if(clientTanks.get(i)!=null)
-                     Client.getGameClient().sendToServer(new Protocol().RemoveClientPacket(clientTanks.get(i).getTankID()));  
+                     Client.getGameClient().sendToServer(new MessageClient().RemoveClientPacket(clientTanks.get(i).getTankID()));  
                     
                     return true;
                 }

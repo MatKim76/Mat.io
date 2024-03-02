@@ -8,7 +8,7 @@ import java.util.ArrayList;
 /*
  * Server.java
  *
- * Created on 21 ãÇÑÓ, 2008, 09:41 Õ
+ * Created on 21 ï¿½ï¿½ï¿½ï¿½, 2008, 09:41 ï¿½
  *
  * To change this template, choose Tools | Template Manager
  * and open the template in the editor.
@@ -32,12 +32,12 @@ public class Server extends Thread {
     private DataInputStream reader;
     private DataOutputStream writer;
    
-    private Protocol protocol;
+    private MessageServer protocol;
     private boolean running=true;
     public Server() throws SocketException 
     {
         clients=new ArrayList<ClientInfo>();
-        protocol=new Protocol();
+        protocol=new MessageServer();
         try {
             serverSocket=new ServerSocket(serverPort);
         } catch (IOException ex) {
@@ -67,7 +67,7 @@ public class Server extends Thread {
                 ex.printStackTrace();
             }
             
-            System.out.println(sentence);
+            //System.out.println(sentence);
             if(sentence.startsWith("Hello"))
             {
                 int pos=sentence.indexOf(',');
@@ -81,7 +81,7 @@ public class Server extends Thread {
                 }
                 sendToClient(protocol.IDPacket(clients.size()+1));
                 try {
-                    BroadCastMessage(protocol.NewClientPacket(x,y,1,clients.size()+1));
+                    BroadCastMessage(protocol.NewClientPacket(x,y,clients.size()+1));
                     sendAllClients(writer);
                 } catch (IOException ex) {
                     ex.printStackTrace();
@@ -93,24 +93,24 @@ public class Server extends Thread {
             
             else if(sentence.startsWith("Update"))
             {
-                    int pos1=sentence.indexOf(',');
-                    int pos2=sentence.indexOf('-');
-                    int pos3=sentence.indexOf('|');
-                    int x=Integer.parseInt(sentence.substring(6,pos1));
-                    int y=Integer.parseInt(sentence.substring(pos1+1,pos2));
-                    int dir=Integer.parseInt(sentence.substring(pos2+1,pos3));
-                    int id=Integer.parseInt(sentence.substring(pos3+1,sentence.length()));
-                    if(clients.get(id-1)!=null)
-                    {
-                        clients.get(id-1).setPosX(x);
-                        clients.get(id-1).setPosY(y);
-                        clients.get(id-1).setDirection(dir);
-                        try {
-                            BroadCastMessage(sentence);
-                        } catch (IOException ex) {
-                            ex.printStackTrace();
-                        }
+                int pos1=sentence.indexOf(',');
+                //int pos2=sentence.indexOf('-');
+                int pos3=sentence.indexOf('|');
+                int x=Integer.parseInt(sentence.substring(6,pos1));
+                int y=Integer.parseInt(sentence.substring(pos1+1,pos3));
+                //int dir=Integer.parseInt(sentence.substring(pos2+1,pos3));
+                int id=Integer.parseInt(sentence.substring(pos3+1,sentence.length()));
+                if(clients.get(id-1)!=null)
+                {
+                    clients.get(id-1).setPosX(x);
+                    clients.get(id-1).setPosY(y);
+                    //clients.get(id-1).setDirection(dir);
+                    try {
+                        BroadCastMessage(sentence);
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
                     }
+                }
                     
             }
             else if(sentence.startsWith("Shot"))
@@ -190,9 +190,9 @@ public class Server extends Thread {
             if(clients.get(i)!=null) {
                 x=clients.get(i).getX();
                 y=clients.get(i).getY();
-                dir=clients.get(i).getDir();
+                //dir=clients.get(i).getDir();
                 try {
-                    writer.writeUTF(protocol.NewClientPacket(x,y,dir,i+1));
+                    writer.writeUTF(protocol.NewClientPacket(x,y,i+1));
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
