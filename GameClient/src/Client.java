@@ -26,16 +26,14 @@ public class Client {
         protocol = new MessageClient();
     }
 
-    public void register(String Ip,int port,int posX,int posY) throws IOException
+    public void register(String ip, int port, Joueur joueur, int indexCouleur) throws IOException
     {
         this.serverPort=port;
-        this.hostName=Ip;
-        clientSocket=new Socket(Ip,port);
+        this.hostName=ip;
+        clientSocket=new Socket(ip,port);
         writer=new DataOutputStream(clientSocket.getOutputStream());
       
-        writer.writeUTF(protocol.RegisterPacket(posX,posY));
-        
-
+        writer.writeUTF(protocol.RegisterPacket(joueur.getNom(), joueur.getX(), joueur.getY(), indexCouleur));
     }
   
     public void sendToServer(String message)

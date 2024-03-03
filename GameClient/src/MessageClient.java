@@ -11,9 +11,8 @@
  *
  * @author Mohamed Talaat Saad
  */
-public class MessageClient {
-    
-    
+public class MessageClient 
+{
     /**
      * Creates a new instance of Protocol
      */
@@ -23,9 +22,9 @@ public class MessageClient {
         
     }
     
-    public String RegisterPacket(int x,int y)
+    public String RegisterPacket(String nom, int x, int y, int couleur)
     {
-        message="Hello"+x+","+y;
+        message = "Hello" + nom + "[" + x + "," + y + "]" + couleur;
         return message;
     }
     

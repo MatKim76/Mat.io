@@ -3,8 +3,8 @@ import java.io.Serializable;
 
 public class Joueur implements Comparable<Joueur>, Serializable
 {
-	public static int HAUTEUR = 400;
-    public static int LARGEUR = 473;
+	public static int HAUTEUR = 1000;
+    public static int LARGEUR = 1000;
     
     private static int VITESSE_BASE = 2;
 	private static int TAILLE = 20;
@@ -13,6 +13,7 @@ public class Joueur implements Comparable<Joueur>, Serializable
 	private int id;
     private String nom;
 	private Color couleur;
+	private int indexCouleur;
 
 	private int chargeBouclier;
 	private boolean bouclier;
@@ -26,11 +27,12 @@ public class Joueur implements Comparable<Joueur>, Serializable
 
 	private int vitesse;
 
-	public Joueur(int id, String nom, Color couleur)
+	public Joueur(int id, String nom, Color couleur, int indexCouleur)
 	{
 		this.id = id;
         this.nom = nom;
 		this.couleur = couleur;
+		this.indexCouleur = indexCouleur;
 
 		this.maxBouclier = Joueur.MAX_BOUCLIER;
 		this.chargeBouclier = Joueur.MAX_BOUCLIER;
@@ -39,11 +41,8 @@ public class Joueur implements Comparable<Joueur>, Serializable
 		//this.x = (int)(Math.random()*map.getLongueur());
 		//this.y = (int)(Math.random()*map.getHauteur());
 
-        //this.x = (int)(Math.random()*Joueur.LARGEUR);
-        //this.y = (int)(Math.random()*Joueur.HAUTEUR);
-
-        this.x = 200;
-        this.y = 200;
+        this.x = (int)(Math.random()*Joueur.LARGEUR);
+        this.y = (int)(Math.random()*Joueur.HAUTEUR);
 
 		this.vitesse = Joueur.VITESSE_BASE;
 		this.score = 0;
@@ -59,6 +58,7 @@ public class Joueur implements Comparable<Joueur>, Serializable
 			this.vitesse = Joueur.VITESSE_BASE*2;
 			return;
 		}
+		this.vitesse = Joueur.VITESSE_BASE;
 		this.bouclier = false;
 	}
 
@@ -106,6 +106,7 @@ public class Joueur implements Comparable<Joueur>, Serializable
     public void setY(int y) {this.y = y;}
     public void setId(int id) {this.id=id;}
     public void setBouclier(boolean bool) {this.bouclier=bool;}
+	public void setIndexCouleur(int index) {this.indexCouleur = index;}
 
 	public String getNom() {return this.nom;}
 	public int getX() {return this.x;}
@@ -118,6 +119,7 @@ public class Joueur implements Comparable<Joueur>, Serializable
 	public int getScore() {return this.score;}
 	public int getKill() {return this.kill;}
     public int getId() {return this.id;}
+	public int getIndexCouleur() {return this.indexCouleur;}
 
 	@Override
 	public int compareTo(Joueur j) 

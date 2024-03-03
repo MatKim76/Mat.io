@@ -29,9 +29,9 @@ public class MessageServer {
         return message;   
     }*/
 
-    public String NewClientPacket(int x,int y,int id)
+    public String NewClientPacket(String nom, int x, int y, int couleur, int id)
     {
-        message="NewClient"+x+","+y+"|"+id;
+        message="NewClient" + nom + "[" + x + "," + y + "]" + couleur + "|" + id;
         return message;   
     }
 

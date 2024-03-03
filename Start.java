@@ -15,6 +15,7 @@ public class Start extends JFrame implements ActionListener
     public Start() 
     {
         this.setSize(200, 150);
+        this.setLocationRelativeTo(null);
         
         this.panel = new JPanel();
         this.btnClient = new JButton("Client");
@@ -33,7 +34,8 @@ public class Start extends JFrame implements ActionListener
     
     public static void main(String args[]) throws IOException
     {
-        new Start();
+        //new Start();
+        new ClientGUI();
     }
 
     @Override
