@@ -32,7 +32,7 @@ public class ClientGUI extends JFrame implements ActionListener,WindowListener
     /** Creates a new instance of ClientGUI */
     private JLabel ipaddressLabel;
     private JLabel portLabel;
-    private static JLabel scoreLabel;
+    //private static JLabel scoreLabel;
     
     private JTextField ipaddressText;
     private JTextField portText;
@@ -59,40 +59,40 @@ public class ClientGUI extends JFrame implements ActionListener,WindowListener
         setTitle("Multiclients Tanks Game");
         setSize(width,height);
         setLocation(60,100);
-        getContentPane().setBackground(Color.BLACK);
+        //getContentPane().setBackground(Color.BLACK);
         
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLayout(null);
+        //setLayout(null);
         addWindowListener(this);
         registerPanel=new JPanel();
         registerPanel.setBackground(Color.YELLOW);
         registerPanel.setSize(200,140);
-        registerPanel.setBounds(560,50,200,140);
-        registerPanel.setLayout(null);
+        //registerPanel.setBounds(560,50,200,140);
+        //registerPanel.setLayout(null);
         
         gameStatusPanel=new JPanel();
         gameStatusPanel.setBackground(Color.YELLOW);
         gameStatusPanel.setSize(200,300);
-        gameStatusPanel.setBounds(560,210,200,311);
+        //gameStatusPanel.setBounds(560,210,200,311);
         gameStatusPanel.setLayout(null);
      
         ipaddressLabel=new JLabel("IP address: ");
-        ipaddressLabel.setBounds(10,25,70,25);
+        //ipaddressLabel.setBounds(10,25,70,25);
         
         portLabel=new JLabel("Port: ");
-        portLabel.setBounds(10,55,50,25);
+        //portLabel.setBounds(10,55,50,25);
         
-        scoreLabel=new JLabel("Score : 0");
-        scoreLabel.setBounds(10,90,100,25);
+        //scoreLabel=new JLabel("Score : 0");
+        //scoreLabel.setBounds(10,90,100,25);
         
         ipaddressText=new JTextField("localhost");
-        ipaddressText.setBounds(90,25,100,25);
+        //ipaddressText.setBounds(90,25,100,25);
         
         portText=new JTextField("11111");
-        portText.setBounds(90,55,100,25);
+        //portText.setBounds(90,55,100,25);
        
         registerButton=new JButton("Register");
-        registerButton.setBounds(60,100,90,25);
+        //registerButton.setBounds(60,100,90,25);
         registerButton.addActionListener(this);
         registerButton.setFocusable(true);
         
@@ -103,19 +103,17 @@ public class ClientGUI extends JFrame implements ActionListener,WindowListener
         registerPanel.add(portText);
         registerPanel.add(registerButton);
        
-        gameStatusPanel.add(scoreLabel);
+        //gameStatusPanel.add(scoreLabel);
             
         client=Client.getGameClient();
 
         clientJoueur = new Joueur(1, "a", Color.BLUE );//new Color((int)(Math.random()*256), (int)(Math.random()*256) ,(int)(Math.random()*256))
         boardPanel=new GameBoardPanel(clientJoueur,client,false);
+        boardPanel.setVisible(false);
         
-        /*clientTank=new Tank();
-        boardPanel=new GameBoardPanel(clientTank,client,false);*/
-        
-        getContentPane().add(registerPanel);        
-        getContentPane().add(gameStatusPanel);
-        getContentPane().add(boardPanel);        
+        this.add(registerPanel);        
+        //getContentPane().add(gameStatusPanel);
+        this.add(boardPanel);        
         setVisible(true);
 
     }
@@ -123,12 +121,6 @@ public class ClientGUI extends JFrame implements ActionListener,WindowListener
     public static int getScore()
     {
         return score;
-    }
-    
-    public static void setScore(int scoreParametar)
-    {
-        score+=scoreParametar;
-        scoreLabel.setText("Score : "+score);
     }
     
     public void actionPerformed(ActionEvent e) 
@@ -141,10 +133,14 @@ public class ClientGUI extends JFrame implements ActionListener,WindowListener
             
             try 
             {
-                 client.register(ipaddressText.getText(),Integer.parseInt(portText.getText()),clientJoueur.getX(),clientJoueur.getY());
-                 //soundManger=new SoundManger();
-                 boardPanel.setGameStatus(true);
-                 boardPanel.repaint();
+                client.register(ipaddressText.getText(),Integer.parseInt(portText.getText()),clientJoueur.getX(),clientJoueur.getY());
+                //soundManger=new SoundManger();
+                boardPanel.setGameStatus(true);
+
+                this.registerPanel.setVisible(false);
+                this.boardPanel.setVisible(true);
+                boardPanel.repaint();
+
                 try {
                     Thread.sleep(500);
                 } catch (InterruptedException ex) {
@@ -241,18 +237,19 @@ public class ClientGUI extends JFrame implements ActionListener,WindowListener
                else if(sentence.startsWith("Update"))
                {
                     int pos1=sentence.indexOf(',');
-                    //int pos2=sentence.indexOf('-');
-                    int pos3=sentence.indexOf('|');
-                    int x=Integer.parseInt(sentence.substring(6,pos1));
-                    int y=Integer.parseInt(sentence.substring(pos1+1,pos3));
-                    //int dir=Integer.parseInt(sentence.substring(pos2+1,pos3));
-                    int id=Integer.parseInt(sentence.substring(pos3+1,sentence.length()));
-                
+                    int pos2=sentence.indexOf('|');
+                    int pos3=sentence.indexOf('#');
+
+                    int x=Integer.parseInt(sentence.substring(6, pos1));
+                    int y=Integer.parseInt(sentence.substring(pos1+1, pos2));
+                    int id=Integer.parseInt(sentence.substring(pos2+1, pos3));
+                    boolean bool = Boolean.parseBoolean(sentence.substring(pos3+1, sentence.length())); 
+
                     if(id!=clientJoueur.getId())
                     {
                         boardPanel.getTank(id).setX(x);
                         boardPanel.getTank(id).setY(y);
-                        //boardPanel.getTank(id).setDirection(dir);
+                        boardPanel.getTank(id).setBouclier(bool);
                         boardPanel.repaint();
                     }
                     

@@ -40,93 +40,6 @@ public class InputManager implements KeyListener, Runnable
         
     }
 
-    /*public void keyTyped(KeyEvent e) {
-    }
-
-    public void keyPressed(KeyEvent e) 
-    {
-
-        if(e.getKeyCode()==LEFT)
-        {
-            if(tank.getDirection()==1|tank.getDirection()==3)
-            {
-                
-                tank.moveLeft();
-                
-                client.sendToServer(new MessageClient().UpdatePacket(tank.getXposition(),
-                          tank.getYposition(),tank.getTankID(),tank.getDirection()));
-                
- 
-            }
-            else if(tank.getDirection()==4)
-            {
-                tank.moveLeft();          
-                client.sendToServer(new MessageClient().UpdatePacket(tank.getXposition(),
-                            tank.getYposition(),tank.getTankID(),tank.getDirection()));
-            }
-        }
-        else if(e.getKeyCode()==RIGHT)
-        {
-            if(tank.getDirection()==1|tank.getDirection()==3)
-            {
-                tank.moveRight();                        
-                client.sendToServer(new MessageClient().UpdatePacket(tank.getXposition(),
-                           tank.getYposition(),tank.getTankID(),tank.getDirection()));
-                    
-            }
-            else if(tank.getDirection()==2)
-            {
-                tank.moveRight();
-                client.sendToServer(new MessageClient().UpdatePacket(tank.getXposition(),
-                             tank.getYposition(),tank.getTankID(),tank.getDirection()));
-            }
-        }
-        else if(e.getKeyCode()==UP)
-        {
-            if(tank.getDirection()==2|tank.getDirection()==4)
-            {
-                tank.moveForward();                            
-                client.sendToServer(new MessageClient().UpdatePacket(tank.getXposition(),
-                          tank.getYposition(),tank.getTankID(),tank.getDirection()));
-                        
-            }
-            else if(tank.getDirection()==1)
-            {
-                tank.moveForward();
-                client.sendToServer(new MessageClient().UpdatePacket(tank.getXposition(),
-                        tank.getYposition(),tank.getTankID(),tank.getDirection()));
-                            
-            }
-        }
-        else if(e.getKeyCode()==DOWN)
-        {
-            if(tank.getDirection()==2|tank.getDirection()==4)
-            {
-                tank.moveBackward();
-               
-                client.sendToServer(new MessageClient().UpdatePacket(tank.getXposition(),
-                        tank.getYposition(),tank.getTankID(),tank.getDirection()));
-                            
-            }
-            else if(tank.getDirection()==3)
-            {
-                tank.moveBackward();
-                                    
-                client.sendToServer(new MessageClient().UpdatePacket(tank.getXposition(),
-                                tank.getYposition(),tank.getTankID(),tank.getDirection()));
-                                
-            }
-        }
-        else if(e.getKeyCode()==KeyEvent.VK_SPACE)
-        {
-            client.sendToServer(new MessageClient().ShotPacket(tank.getTankID()));
-            tank.shot();
-        }
-    }
-
-    public void keyReleased(KeyEvent e) {
-    }*/
-
     @Override
 	public void keyTyped(KeyEvent e) 
 	{
@@ -166,7 +79,7 @@ public class InputManager implements KeyListener, Runnable
 			}
 
 			//repaint();
-            client.sendToServer(new MessageClient().UpdatePacket(joueur.getX(),joueur.getY(),joueur.getId() ));
+            client.sendToServer(new MessageClient().UpdatePacket(joueur.getX(),joueur.getY(),joueur.getId(), joueur.getBouclier() ));
 
 			try 
 			{

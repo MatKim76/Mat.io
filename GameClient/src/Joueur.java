@@ -105,6 +105,7 @@ public class Joueur implements Comparable<Joueur>, Serializable
     public void setX(int x) {this.x = x;}
     public void setY(int y) {this.y = y;}
     public void setId(int id) {this.id=id;}
+    public void setBouclier(boolean bool) {this.bouclier=bool;}
 
 	public String getNom() {return this.nom;}
 	public int getX() {return this.x;}

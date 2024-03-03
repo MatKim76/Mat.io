@@ -28,16 +28,6 @@ public class MessageClient {
         message="Hello"+x+","+y;
         return message;
     }
-    public String UpdatePacket(int x,int y,int id,int dir)
-    {
-        message="Update"+x+","+y+"-"+dir+"|"+id;
-        return message;
-    }
-    public String ShotPacket(int id)
-    {
-        message="Shot"+id;
-        return message;
-    }
     
     public String RemoveClientPacket(int id)
     {
@@ -50,10 +40,9 @@ public class MessageClient {
         return message;
     }
 
-    //new methodes
-    public String UpdatePacket (int x,int y,int id)
+    public String UpdatePacket (int x,int y,int id, boolean shield)
     {
-        message="Update"+x+","+y+"|"+id;
+        message="Update"+x+","+y+"|"+id + "#"+shield ;
         return message;
     }
 }

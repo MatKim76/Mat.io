@@ -71,10 +71,18 @@ public class GameBoardPanel extends JPanel {
             int joueurDessinX = getWidth() / 2 - joueurX - joueur.getTaille()/2;
             int joueurDessinY = getHeight() / 2 - joueurY - joueur.getTaille()/2;
 
-            g.setColor(joueur.getCouleur());
-            g.fillRect(joueurDessinX + joueurX, joueurDessinY + joueurY, joueur.getTaille(), joueur.getTaille());
-            g.drawString(joueur.getNom() + "", joueurDessinX + joueurX + 6 - joueur.getNom().length() * 3, joueurDessinY + joueurY + joueur.getTaille() + 10);
+            int posX = joueurX + joueurDessinX;
+            int posY = joueurY + joueurDessinY;
 
+            // Dessin du joueur controler
+            g.setColor(joueur.getCouleur());
+            g.fillRect(posX, posY, joueur.getTaille(), joueur.getTaille());
+            g.drawString(joueur.getNom() + "", posX + 6 - joueur.getNom().length() * 3, posY + joueur.getTaille() + 10);
+
+            if (joueur.getBouclier()) {
+                g.setColor(Color.BLUE);
+                g.drawRect(posX - 5, posY - 5, joueur.getTaille() + 10, joueur.getTaille() + 10);
+            }
         
             // Dessiner les autres éléments de la carte en ajustant leurs coordonnées de dessin
             for(int i=1;i<joueurs.size();i++)  

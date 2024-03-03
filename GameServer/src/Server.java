@@ -87,24 +87,26 @@ public class Server extends Thread {
                     ex.printStackTrace();
                 }
                 
-                clients.add(new ClientInfo(writer,x,y,1));
+                clients.add(new ClientInfo(writer,x,y,false));
                 
             }
             
             else if(sentence.startsWith("Update"))
             {
                 int pos1=sentence.indexOf(',');
-                //int pos2=sentence.indexOf('-');
-                int pos3=sentence.indexOf('|');
-                int x=Integer.parseInt(sentence.substring(6,pos1));
-                int y=Integer.parseInt(sentence.substring(pos1+1,pos3));
-                //int dir=Integer.parseInt(sentence.substring(pos2+1,pos3));
-                int id=Integer.parseInt(sentence.substring(pos3+1,sentence.length()));
+                int pos2=sentence.indexOf('|');
+                int pos3=sentence.indexOf('#');
+
+                int x=Integer.parseInt(sentence.substring(6, pos1));
+                int y=Integer.parseInt(sentence.substring(pos1+1, pos2));
+                int id=Integer.parseInt(sentence.substring(pos2+1, pos3));
+                boolean bool = Boolean.parseBoolean(sentence.substring(pos3+1, sentence.length())); 
+
                 if(clients.get(id-1)!=null)
                 {
                     clients.get(id-1).setPosX(x);
                     clients.get(id-1).setPosY(y);
-                    //clients.get(id-1).setDirection(dir);
+                    clients.get(id-1).setBouclier(bool);
                     try {
                         BroadCastMessage(sentence);
                     } catch (IOException ex) {
@@ -203,14 +205,15 @@ public class Server extends Thread {
     public class ClientInfo
     {
         DataOutputStream writer;
-        int posX,posY,direction;
+        int posX,posY;
+        boolean bouclier;
         
-        public ClientInfo(DataOutputStream writer,int posX,int posY,int direction)
+        public ClientInfo(DataOutputStream writer,int posX,int posY, boolean bouclier)
         {
            this.writer=writer;
            this.posX=posX;
            this.posY=posY;
-           this.direction=direction;
+           this.bouclier = bouclier;
         }
         
         public void setPosX(int x)
@@ -221,9 +224,9 @@ public class Server extends Thread {
         {
             posY=y;
         }
-        public void setDirection(int dir)
+        public void setBouclier(boolean bool)
         {
-            direction=dir;
+            this.bouclier = bool;
         }
         public DataOutputStream getWriterStream()
         {
@@ -237,9 +240,9 @@ public class Server extends Thread {
         {
             return posY;
         }
-        public int getDir()
+        public boolean getBouclier()
         {
-            return direction;
+            return this.bouclier;
         }
     }
     
