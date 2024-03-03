@@ -107,7 +107,7 @@ public class ClientGUI extends JFrame implements ActionListener,WindowListener
             
         client=Client.getGameClient();
 
-        clientJoueur = new Joueur(1, "a", Color.WHITE);
+        clientJoueur = new Joueur(1, "a", Color.BLUE );//new Color((int)(Math.random()*256), (int)(Math.random()*256) ,(int)(Math.random()*256))
         boardPanel=new GameBoardPanel(clientJoueur,client,false);
         
         /*clientTank=new Tank();

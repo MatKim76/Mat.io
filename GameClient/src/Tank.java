@@ -219,8 +219,7 @@ public class Tank {
         curBomb++;
     
     }
-
-    //TODO refaire
+    
     public boolean checkCollision(int xP,int yP)
     {
         ArrayList<Joueur>clientTanks=GameBoardPanel.getClients();

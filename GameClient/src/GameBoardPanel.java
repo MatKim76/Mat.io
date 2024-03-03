@@ -3,6 +3,8 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
+import java.util.Map;
+
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 /*
@@ -37,7 +39,7 @@ public class GameBoardPanel extends JPanel {
         addKeyListener(new InputManager(joueur));
         setFocusable(true);
         
-        joueurs = new ArrayList<Joueur>(100);
+        joueurs = new ArrayList<Joueur>(50);
         
         for(int i=0;i<100;i++)
         {
@@ -49,55 +51,91 @@ public class GameBoardPanel extends JPanel {
         super.paintComponent(gr);
         Graphics2D g=(Graphics2D)gr;
  
-        g.setColor(Color.BLACK);
-        g.fillRect(0,0, getWidth(),getHeight());
+        //g.setColor(Color.BLACK);
+        //g.fillRect(0,0, getWidth(),getHeight());
         
-        g.setColor(Color.GREEN);
-        g.fillRect(70,50, getWidth()-100,getHeight());
+        //g.setColor(Color.GREEN);
+        //g.fillRect(70,50, getWidth()-100,getHeight());
         //g.drawImage(new ImageIcon("Images/bg.jpg").getImage(),70,50,null);
-        g.setColor(Color.YELLOW);
-        g.setFont(new Font("Comic Sans MS",Font.BOLD,25));
-        g.drawString("Tanks 2D Multiplayers Game",255,30);
+        //g.setColor(Color.YELLOW);
+        //g.setFont(new Font("Comic Sans MS",Font.BOLD,25));
+        //g.drawString("Tanks 2D Multiplayers Game",255,30);
+
         if(gameStatus) 
         {
-            //g.drawImage(tank.getBuffImage(),tank.getXposition(),tank.getYposition(),this);
-            g.setColor(joueur.getCouleur());
-            g.fillRect(joueur.getX(), joueur.getY(), joueur.getTaille(), joueur.getTaille());
-            //TODO afficher bouclier
+            // Récupérer la position du joueur
+            int joueurX = this.joueur.getX();
+            int joueurY = this.joueur.getY();
+        
+            // Calculer les coordonnées de dessin du joueur pour qu'il soit au centre du panel
+            int joueurDessinX = getWidth() / 2 - joueurX - joueur.getTaille()/2;
+            int joueurDessinY = getHeight() / 2 - joueurY - joueur.getTaille()/2;
 
-            /*for(int j=0;j<1000;j++)
-            {
-                if(tank.getBomb()[j]!=null) 
-                {
-                    if(tank.getBomb()[j].stop==false){
-                        g.drawImage(tank.getBomb()[j].getBomBufferdImg(),tank.getBomb()[j].getPosiX(),tank.getBomb()[j].getPosiY(),this);
-                    }
-                }
-            }*/
-            for(int i=1;i<joueurs.size();i++) 
+            g.setColor(joueur.getCouleur());
+            g.fillRect(joueurDessinX + joueurX, joueurDessinY + joueurY, joueur.getTaille(), joueur.getTaille());
+            g.drawString(joueur.getNom() + "", joueurDessinX + joueurX + 6 - joueur.getNom().length() * 3, joueurDessinY + joueurY + joueur.getTaille() + 10);
+
+        
+            // Dessiner les autres éléments de la carte en ajustant leurs coordonnées de dessin
+            for(int i=1;i<joueurs.size();i++)  
             {
                 if(joueurs.get(i)!=null)
                 {
-                    g.setColor(joueur.getCouleur());
-                    g.fillRect(joueurs.get(i).getX(), joueurs.get(i).getY(), joueurs.get(i).getTaille(), joueurs.get(i).getTaille());
-                }
-                    
-                    //g.drawImage(tanks.get(i).getBuffImage(),tanks.get(i).getXposition(),tanks.get(i).getYposition(),this);
-                
-                /*for(int j=0;j<1000;j++)
-                {
-                    if(tanks.get(i)!=null)
-                    {
-                        if(tanks.get(i).getBomb()[j]!=null) 
-                        {
-                            if(tanks.get(i).getBomb()[j].stop==false){
-                            g.drawImage(tanks.get(i).getBomb()[j].getBomBufferdImg(),tanks.get(i).getBomb()[j].getPosiX(),tanks.get(i).getBomb()[j].getPosiY(),this);
-                            }
-                        }
+                    int dessinX = joueurDessinX + joueurs.get(i).getX();
+                    int dessinY = joueurDessinY + joueurs.get(i).getY();
+            
+                    // Dessiner le joueur à sa nouvelle position calculée
+                    g.setColor(joueurs.get(i).getCouleur());
+                    g.fillRect(dessinX, dessinY, joueurs.get(i).getTaille(), joueurs.get(i).getTaille());
+                    g.drawString(joueurs.get(i).getNom() + "", dessinX + 6 - joueurs.get(i).getNom().length() * 3, dessinY + joueurs.get(i).getTaille() + 10);
+            
+                    if (joueurs.get(i).getBouclier()) {
+                        g.setColor(Color.BLUE);
+                        g.drawRect(dessinX - 5, dessinY - 5, joueurs.get(i).getTaille() + 10, joueurs.get(i).getTaille() + 10);
                     }
-                }*/
+                }
             }
 
+            // Dessin des bonus
+            /*for (Bonus b : this.ctrl.getBonus()) 
+            {
+                int dessinX = joueurDessinX + b.getX();
+                int dessinY = joueurDessinY + b.getY();
+        
+                // Dessiner le bonus à sa nouvelle position calculée
+                g.setColor(b.getCouleur());
+                g.fillRect(dessinX, dessinY, b.getTaille(), b.getTaille());
+            }*/
+        
+            // Dessiner d'autres éléments de la carte (bordures, etc.) en ajustant leurs coordonnées de dessin
+            int dessinBordureX = joueurDessinX;
+            int dessinBordureY = joueurDessinY;
+        
+            g.setColor(Color.BLACK);
+            g.drawLine(dessinBordureX, dessinBordureY, dessinBordureX, dessinBordureY + Joueur.HAUTEUR);
+            g.drawLine(dessinBordureX, dessinBordureY, dessinBordureX + Joueur.LARGEUR, dessinBordureY);
+            g.drawLine(dessinBordureX + Joueur.LARGEUR, dessinBordureY, dessinBordureX + Joueur.LARGEUR, dessinBordureY + Joueur.HAUTEUR);
+            g.drawLine(dessinBordureX, dessinBordureY + Joueur.HAUTEUR, dessinBordureX + Joueur.LARGEUR, dessinBordureY + Joueur.HAUTEUR);
+        
+            // Dessiner d'autres éléments non liés à la carte (informations, etc.) normalement
+            g.drawString("score : " + this.joueur.getScore(), 0, 20);
+            g.drawString("kill : " + this.joueur.getKill(), 0, 35);
+
+            //affichage du leaderboard
+            /*joueurs.sort(null);
+            for (int i=0 ; i < joueurs.size() ; i++)
+            {
+                if(joueurs.get(i)!=null)
+                {
+                    if(i > 10 ) break;
+
+                    g.drawString( (i+1) + ". " + joueurs.get(i).toString(), this.getWidth() - 100, 20 + i*15);
+                }
+            }*/
+
+            // affichage de charge bouclier
+            g.setColor(Color.BLUE);
+            g.fillRect( 0, this.getHeight() - 10, (int)(this.getWidth() * this.joueur.getNbBouclier()/this.joueur.getNbMaxBouclier()), 15);
         }
         
         repaint();
@@ -121,7 +159,7 @@ public class GameBoardPanel extends JPanel {
         gameStatus=status;
     }
   
-    public static ArrayList<Joueur> getClients()
+    public ArrayList<Joueur> getClients()
     {
         return joueurs;
     }

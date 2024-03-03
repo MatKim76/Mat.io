@@ -3,8 +3,8 @@ import java.io.Serializable;
 
 public class Joueur implements Comparable<Joueur>, Serializable
 {
-	private static int HAUTEUR = 400;
-    private static int LARGEUR = 473;
+	public static int HAUTEUR = 400;
+    public static int LARGEUR = 473;
     
     private static int VITESSE_BASE = 2;
 	private static int TAILLE = 20;
