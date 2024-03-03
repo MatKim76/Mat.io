@@ -11,5 +11,6 @@ A faire :
 - Ajout Bonus
 - Ajout Pouvoir/Amélioration ?
 - Ajout Menu de choix de style ?
+- Ajout Son ?
 - Nettoyage code
-- Mettre commentaire
+- Mettre commentaires
