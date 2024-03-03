@@ -8,7 +8,7 @@ import java.util.ArrayList;
 /*
  * Server.java
  *
- * Created on 21 ãÇÑÓ, 2008, 09:41 Õ
+ * Created on 21 ï¿½ï¿½ï¿½ï¿½, 2008, 09:41 ï¿½
  *
  * To change this template, choose Tools | Template Manager
  * and open the template in the editor.
@@ -32,12 +32,12 @@ public class Server extends Thread {
     private DataInputStream reader;
     private DataOutputStream writer;
    
-    private Protocol protocol;
+    private MessageServer protocol;
     private boolean running=true;
     public Server() throws SocketException 
     {
         clients=new ArrayList<ClientInfo>();
-        protocol=new Protocol();
+        protocol=new MessageServer();
         try {
             serverSocket=new ServerSocket(serverPort);
         } catch (IOException ex) {
@@ -67,12 +67,17 @@ public class Server extends Thread {
                 ex.printStackTrace();
             }
             
-            System.out.println(sentence);
+            //System.out.println(sentence);
             if(sentence.startsWith("Hello"))
             {
-                int pos=sentence.indexOf(',');
-                int x=Integer.parseInt(sentence.substring(5,pos));
-                int y=Integer.parseInt(sentence.substring(pos+1,sentence.length()));
+                int pos1 = sentence.indexOf('[');
+                int pos2 = sentence.indexOf(',');
+                int pos3 = sentence.indexOf(']');
+
+                String nom = sentence.substring(5, pos1);
+                int x = Integer.parseInt(sentence.substring(pos1+1, pos2));
+                int y = Integer.parseInt(sentence.substring(pos2+1, pos3));
+                int couleur = Integer.parseInt(sentence.substring(pos3+1, sentence.length()));
               
                 try {
                     writer=new DataOutputStream(clientSocket.getOutputStream());
@@ -81,45 +86,39 @@ public class Server extends Thread {
                 }
                 sendToClient(protocol.IDPacket(clients.size()+1));
                 try {
-                    BroadCastMessage(protocol.NewClientPacket(x,y,1,clients.size()+1));
+                    BroadCastMessage(protocol.NewClientPacket(nom, x, y, couleur, clients.size()+1));
                     sendAllClients(writer);
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
                 
-                clients.add(new ClientInfo(writer,x,y,1));
+                clients.add(new ClientInfo(writer, nom, x, y, couleur, false));
                 
             }
             
             else if(sentence.startsWith("Update"))
             {
-                    int pos1=sentence.indexOf(',');
-                    int pos2=sentence.indexOf('-');
-                    int pos3=sentence.indexOf('|');
-                    int x=Integer.parseInt(sentence.substring(6,pos1));
-                    int y=Integer.parseInt(sentence.substring(pos1+1,pos2));
-                    int dir=Integer.parseInt(sentence.substring(pos2+1,pos3));
-                    int id=Integer.parseInt(sentence.substring(pos3+1,sentence.length()));
-                    if(clients.get(id-1)!=null)
-                    {
-                        clients.get(id-1).setPosX(x);
-                        clients.get(id-1).setPosY(y);
-                        clients.get(id-1).setDirection(dir);
-                        try {
-                            BroadCastMessage(sentence);
-                        } catch (IOException ex) {
-                            ex.printStackTrace();
-                        }
+                int pos1=sentence.indexOf(',');
+                int pos2=sentence.indexOf('|');
+                int pos3=sentence.indexOf('#');
+
+                int x  = Integer.parseInt(sentence.substring(6, pos1));
+                int y  = Integer.parseInt(sentence.substring(pos1+1, pos2));
+                int id = Integer.parseInt(sentence.substring(pos2+1, pos3));
+                boolean bool = Boolean.parseBoolean(sentence.substring(pos3+1, sentence.length())); 
+
+                if(clients.size() < id-1 && clients.get(id-1)!=null)
+                {
+                    clients.get(id-1).setPosX(x);
+                    clients.get(id-1).setPosY(y);
+                    clients.get(id-1).setBouclier(bool);
+                    try {
+                        BroadCastMessage(sentence);
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
                     }
-                    
-            }
-            else if(sentence.startsWith("Shot"))
-            {
-                try {
-                    BroadCastMessage(sentence);
-                } catch (IOException ex) {
-                    ex.printStackTrace();
                 }
+                    
             }
             else if(sentence.startsWith("Remove"))
             {
@@ -184,15 +183,19 @@ public class Server extends Thread {
     
     public void sendAllClients(DataOutputStream writer)
     {
-        int x,y,dir;
+        int x, y, index;
+        String nom;
         for(int i=0;i<clients.size();i++)
         {
-            if(clients.get(i)!=null) {
-                x=clients.get(i).getX();
-                y=clients.get(i).getY();
-                dir=clients.get(i).getDir();
+            if(clients.get(i)!=null) 
+            {
+                nom = clients.get(i).getNom();
+                x = clients.get(i).getX();
+                y = clients.get(i).getY();
+                index = clients.get(i).getIndexCouleur();
+
                 try {
-                    writer.writeUTF(protocol.NewClientPacket(x,y,dir,i+1));
+                    writer.writeUTF(protocol.NewClientPacket(nom, x, y, index, i+1));
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
@@ -203,44 +206,33 @@ public class Server extends Thread {
     public class ClientInfo
     {
         DataOutputStream writer;
-        int posX,posY,direction;
+        int posX,posY;
+        boolean bouclier;
+        String nom;
+        int indexCouleur;
         
-        public ClientInfo(DataOutputStream writer,int posX,int posY,int direction)
+        public ClientInfo(DataOutputStream writer, String nom, int posX, int posY, int indexCouleur, boolean bouclier)
         {
-           this.writer=writer;
-           this.posX=posX;
-           this.posY=posY;
-           this.direction=direction;
+           this.writer = writer;
+           this.posX = posX;
+           this.posY = posY;
+           this.bouclier = bouclier;
+           this.nom = nom;
+           this.indexCouleur = indexCouleur;
         }
         
-        public void setPosX(int x)
-        {
-            posX=x;
-        }
-        public void setPosY(int y)
-        {
-            posY=y;
-        }
-        public void setDirection(int dir)
-        {
-            direction=dir;
-        }
-        public DataOutputStream getWriterStream()
-        {
-            return writer;
-        }
-        public int getX()
-        {
-            return posX;
-        }
-        public int getY()
-        {
-            return posY;
-        }
-        public int getDir()
-        {
-            return direction;
-        }
+        public void setPosX(int x) {posX = x;}
+        public void setPosY(int y) {posY = y;}
+        public void setBouclier(boolean bool) {this.bouclier = bool;}
+        public void setNom(String nom) {this.nom = nom;}
+        public void setIndexCouleur(int index) {this.indexCouleur = index;}
+
+        public DataOutputStream getWriterStream() {return writer;}
+        public int getX() {return posX;}
+        public int getY() {return posY;}
+        public boolean getBouclier() {return this.bouclier;}
+        public String getNom() {return this.nom;}
+        public int getIndexCouleur() {return this.indexCouleur;}
     }
     
 }

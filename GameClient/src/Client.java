@@ -1,24 +1,7 @@
-import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
 import java.net.Socket;
-import java.net.SocketException;
-import java.net.UnknownHostException;
-/*
- * Client.java
- *
- * Created on 21 „«—”, 2008, 09:23 ’
- *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
- */
 
 /**
  *
@@ -35,24 +18,22 @@ public class Client {
     private int serverPort;
     private DataInputStream reader;
     private DataOutputStream writer;
-    private Protocol protocol;
+    private MessageClient protocol;
 
     private static Client client;
     private Client() throws IOException 
     {
-        protocol=new Protocol();
+        protocol = new MessageClient();
     }
 
-    public void register(String Ip,int port,int posX,int posY) throws IOException
+    public void register(String ip, int port, Joueur joueur, int indexCouleur) throws IOException
     {
         this.serverPort=port;
-        this.hostName=Ip;
-        clientSocket=new Socket(Ip,port);
+        this.hostName=ip;
+        clientSocket=new Socket(ip,port);
         writer=new DataOutputStream(clientSocket.getOutputStream());
       
-        writer.writeUTF(protocol.RegisterPacket(posX,posY));
-        
-
+        writer.writeUTF(protocol.RegisterPacket(joueur.getNom(), joueur.getX(), joueur.getY(), indexCouleur));
     }
   
     public void sendToServer(String message)
@@ -63,7 +44,7 @@ public class Client {
         {
              try {
                  Socket s=new Socket(hostName,serverPort);
-                 System.out.println(message);
+                 //System.out.println(message);
                  writer=new DataOutputStream(s.getOutputStream());
                 writer.writeUTF(message);
             } catch (IOException ex) {

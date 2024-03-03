@@ -8,7 +8,7 @@ import javax.swing.JLabel;
 /*
  * ServerGUI.java
  *
- * Created on 07 ÃÈÑíá, 2008, 06:32 ã
+ * Created on 07 ï¿½ï¿½ï¿½ï¿½ï¿½, 2008, 06:32 ï¿½
  *
  * To change this template, choose Tools | Template Manager
  * and open the template in the editor.
@@ -30,6 +30,7 @@ public class ServerGUI extends JFrame implements ActionListener {
     {
         setTitle("Game Server GUI");
         setBounds(350,200,300,200);
+        this.setLocationRelativeTo(null);
         
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
@@ -48,9 +49,10 @@ public class ServerGUI extends JFrame implements ActionListener {
         getContentPane().add(statusLabel);
         getContentPane().add(startServerButton);
         getContentPane().add(stopServerButton);
-        try {
-            
-            server=new Server();
+
+        try
+        {
+            server = new Server();
         } catch (SocketException ex) {
             ex.printStackTrace();
         }
@@ -62,16 +64,15 @@ public class ServerGUI extends JFrame implements ActionListener {
     {
         if(e.getSource()==startServerButton)
         {
-             server.start();
-             startServerButton.setEnabled(false);
-             statusLabel.setText("Server is running.....");
-            
+            server.start();
+            startServerButton.setEnabled(false);
+            statusLabel.setText("Server is running.....");
         }
         
         if(e.getSource()==stopServerButton)
         {
-            try {
- 
+            try 
+            {
                 server.stopServer();
                 statusLabel.setText("Server is stopping.....");
                 try {

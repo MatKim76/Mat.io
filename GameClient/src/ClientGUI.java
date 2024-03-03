@@ -7,7 +7,11 @@ import java.awt.event.WindowListener;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -16,7 +20,7 @@ import javax.swing.JTextField;
 /*
  * ClientGUI.java
  *
- * Created on 21 ãÇÑÓ, 2008, 02:26 ã
+ * Created on 21 ï¿½ï¿½ï¿½ï¿½, 2008, 02:26 ï¿½
  *
  * To change this template, choose Tools | Template Manager
  * and open the template in the editor.
@@ -28,24 +32,24 @@ import javax.swing.JTextField;
  */
 public class ClientGUI extends JFrame implements ActionListener,WindowListener 
 {
-    
     /** Creates a new instance of ClientGUI */
+    private static final Color[] COULEURS = {Color.BLUE, Color.CYAN, Color.DARK_GRAY, Color.GRAY, Color.GREEN, Color.LIGHT_GRAY, Color.MAGENTA, Color.ORANGE, Color.PINK, Color.RED, Color.YELLOW};
+
     private JLabel ipaddressLabel;
     private JLabel portLabel;
-    private static JLabel scoreLabel;
     
     private JTextField ipaddressText;
     private JTextField portText;
     
     private JButton registerButton;
     
-    
     private JPanel registerPanel;
-    public static JPanel gameStatusPanel;
     private Client client;
-    private Tank clientTank;
+    private Joueur clientJoueur;
     
-    private static int score;
+    private JButton btnServeur;
+	private JButton btnSearch;
+    private JComboBox<String> serverList;
     
     int width=790,height=580;
     boolean isRunning=true;
@@ -55,107 +59,116 @@ public class ClientGUI extends JFrame implements ActionListener,WindowListener
     
     public ClientGUI() 
     {
-        score=0;
-        setTitle("Multiclients Tanks Game");
+        setTitle("Mat.io");
         setSize(width,height);
-        setLocation(60,100);
-        getContentPane().setBackground(Color.BLACK);
+        this.setLocationRelativeTo(null);
         
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLayout(null);
         addWindowListener(this);
+
         registerPanel=new JPanel();
         registerPanel.setBackground(Color.YELLOW);
-        registerPanel.setSize(200,140);
-        registerPanel.setBounds(560,50,200,140);
-        registerPanel.setLayout(null);
-        
-        gameStatusPanel=new JPanel();
-        gameStatusPanel.setBackground(Color.YELLOW);
-        gameStatusPanel.setSize(200,300);
-        gameStatusPanel.setBounds(560,210,200,311);
-        gameStatusPanel.setLayout(null);
+        registerPanel.setSize(width, height);
+        //registerPanel.setLayout(new );
      
         ipaddressLabel=new JLabel("IP address: ");
-        ipaddressLabel.setBounds(10,25,70,25);
-        
         portLabel=new JLabel("Port: ");
-        portLabel.setBounds(10,55,50,25);
-        
-        scoreLabel=new JLabel("Score : 0");
-        scoreLabel.setBounds(10,90,100,25);
-        
         ipaddressText=new JTextField("localhost");
-        ipaddressText.setBounds(90,25,100,25);
-        
         portText=new JTextField("11111");
-        portText.setBounds(90,55,100,25);
        
         registerButton=new JButton("Register");
-        registerButton.setBounds(60,100,90,25);
         registerButton.addActionListener(this);
-        registerButton.setFocusable(true);
+        //registerButton.setFocusable(true);
         
-       
+        this.btnServeur = new JButton("Serveur");
+        this.btnServeur.addActionListener(this);
+
+        this.btnSearch = new JButton("Recherche de serveur");
+        this.btnSearch.addActionListener(this);
+
+        this.serverList = new JComboBox<>();
+        this.serverList.addItem("localhost");
+
+
         registerPanel.add(ipaddressLabel);
-        registerPanel.add(portLabel);
         registerPanel.add(ipaddressText);
+        registerPanel.add(portLabel);
         registerPanel.add(portText);
         registerPanel.add(registerButton);
-       
-        gameStatusPanel.add(scoreLabel);
-            
-        client=Client.getGameClient();
-         
-        clientTank=new Tank();
-        boardPanel=new GameBoardPanel(clientTank,client,false);
-        
-        getContentPane().add(registerPanel);        
-        getContentPane().add(gameStatusPanel);
-        getContentPane().add(boardPanel);        
-        setVisible(true);
 
-    }
-    
-    public static int getScore()
-    {
-        return score;
-    }
-    
-    public static void setScore(int scoreParametar)
-    {
-        score+=scoreParametar;
-        scoreLabel.setText("Score : "+score);
+        registerPanel.add(this.btnSearch);
+        registerPanel.add(this.btnServeur);
+        registerPanel.add(this.serverList);
+
+        client=Client.getGameClient();
+
+        
+
+        //this.boardPanel   .setVisible(false);
+        //this.registerPanel.setVisible(true);
+        
+        this.add(registerPanel);
+              
+        setVisible(true);
     }
     
     public void actionPerformed(ActionEvent e) 
     {
-        Object obj=e.getSource();
-        
-        if(obj==registerButton)
+        if(e.getSource() == registerButton)
         {
             registerButton.setEnabled(false);
             
             try 
             {
-                 client.register(ipaddressText.getText(),Integer.parseInt(portText.getText()),clientTank.getXposition(),clientTank.getYposition());
-                 soundManger=new SoundManger();
-                 boardPanel.setGameStatus(true);
-                 boardPanel.repaint();
+                //CrÃ©ation du Joueur
+                String nomJoueur = JOptionPane.showInputDialog(null, "Veuillez choisir un pseudo :");
+                while( nomJoueur.length() > 10 )
+                    nomJoueur = JOptionPane.showInputDialog(null, "Pseudo trop long (10 cara max) :");
+                
+                int indexCouleur = (int)(Math.random()*ClientGUI.COULEURS.length);
+
+                this.clientJoueur = new Joueur(1, nomJoueur, ClientGUI.COULEURS[indexCouleur], indexCouleur );
+                boardPanel=new GameBoardPanel(clientJoueur,client,false);
+                this.add(boardPanel);  
+
+                String selectedServer = (String) this.serverList.getSelectedItem();
+                client.register(selectedServer, 11111, clientJoueur, indexCouleur);
+                
+                //soundManger=new SoundManger();
+                
+                //Afficher le plateau
+                this.boardPanel.setGameStatus(true);
+                this.registerPanel.setVisible(false);
+                this.boardPanel.setVisible(true);
+                boardPanel.repaint();
+
                 try {
                     Thread.sleep(500);
                 } catch (InterruptedException ex) {
                     ex.printStackTrace();
                 }
-                 new ClientRecivingThread(client.getSocket()).start();
-                 registerButton.setFocusable(false);
-                 boardPanel.setFocusable(true);
-            } catch (IOException ex) 
+                new ClientRecivingThread(client.getSocket()).start();
+
+                registerButton.setFocusable(false);
+                boardPanel.setFocusable(true);
+            } 
+            catch (IOException ex) 
             {
                 JOptionPane.showMessageDialog(this,"The Server is not running, try again later!","Tanks 2D Multiplayer Game",JOptionPane.INFORMATION_MESSAGE);
                 System.out.println("The Server is not running!");
                 registerButton.setEnabled(true);
             }
+        }
+
+        if (e.getSource() == this.btnSearch)
+		{
+            this.serverList.removeAllItems();
+			chercherServ();
+        }
+
+        if(e.getSource() == this.btnServeur )
+        {
+            new ServerGUI();
         }
         
     }
@@ -167,13 +180,8 @@ public class ClientGUI extends JFrame implements ActionListener,WindowListener
 
     public void windowClosing(WindowEvent e) 
     {
-        
        // int response=JOptionPane.showConfirmDialog(this,"Are you sure you want to exit ?","Tanks 2D Multiplayer Game!",JOptionPane.YES_NO_OPTION);
-        
-     
-     Client.getGameClient().sendToServer(new Protocol().ExitMessagePacket(clientTank.getTankID()));
-        
-        
+        Client.getGameClient().sendToServer(new MessageClient().ExitMessagePacket(clientJoueur.getId()));
     }
     public void windowClosed(WindowEvent e) {
         
@@ -218,48 +226,44 @@ public class ClientGUI extends JFrame implements ActionListener,WindowListener
                if(sentence.startsWith("ID"))
                {
                     int id=Integer.parseInt(sentence.substring(2));
-                    clientTank.setTankID(id);
+                    clientJoueur.setId(id);
                     System.out.println("My ID= "+id);
-                    
                }
                else if(sentence.startsWith("NewClient"))
                {
-                    int pos1=sentence.indexOf(',');
-                    int pos2=sentence.indexOf('-');
-                    int pos3=sentence.indexOf('|');
-                    int x=Integer.parseInt(sentence.substring(9,pos1));
-                    int y=Integer.parseInt(sentence.substring(pos1+1,pos2));
-                    int dir=Integer.parseInt(sentence.substring(pos2+1,pos3));
-                    int id=Integer.parseInt(sentence.substring(pos3+1,sentence.length()));
-                    if(id!=clientTank.getTankID())
-                        boardPanel.registerNewTank(new Tank(x,y,dir,id));
+                    int pos1 = sentence.indexOf('[');
+                    int pos2 = sentence.indexOf(',');
+                    int pos3 = sentence.indexOf(']');
+                    int pos4 = sentence.indexOf('|');
+
+                    String nom = sentence.substring(9, pos1);
+                    int x = Integer.parseInt(sentence.substring(pos1+1, pos2));
+                    int y = Integer.parseInt(sentence.substring(pos2+1, pos3));
+                    int index = Integer.parseInt(sentence.substring(pos3+1, pos4));
+                    int id= Integer.parseInt(sentence.substring(pos4+1, sentence.length()));
+
+                    if(id!=clientJoueur.getId())
+                        boardPanel.registerNewTank( new Joueur(id, nom, ClientGUI.COULEURS[index], index ));
+
+                    System.out.println("new Client " + id);
                }   
                else if(sentence.startsWith("Update"))
                {
                     int pos1=sentence.indexOf(',');
-                    int pos2=sentence.indexOf('-');
-                    int pos3=sentence.indexOf('|');
-                    int x=Integer.parseInt(sentence.substring(6,pos1));
-                    int y=Integer.parseInt(sentence.substring(pos1+1,pos2));
-                    int dir=Integer.parseInt(sentence.substring(pos2+1,pos3));
-                    int id=Integer.parseInt(sentence.substring(pos3+1,sentence.length()));
-                
-                    if(id!=clientTank.getTankID())
+                    int pos2=sentence.indexOf('|');
+                    int pos3=sentence.indexOf('#');
+
+                    int x=Integer.parseInt(sentence.substring(6, pos1));
+                    int y=Integer.parseInt(sentence.substring(pos1+1, pos2));
+                    int id=Integer.parseInt(sentence.substring(pos2+1, pos3));
+                    boolean bool = Boolean.parseBoolean(sentence.substring(pos3+1, sentence.length())); 
+
+                    if(id!=clientJoueur.getId())
                     {
-                        boardPanel.getTank(id).setXpoistion(x);
-                        boardPanel.getTank(id).setYposition(y);
-                        boardPanel.getTank(id).setDirection(dir);
+                        boardPanel.getTank(id).setX(x);
+                        boardPanel.getTank(id).setY(y);
+                        boardPanel.getTank(id).setBouclier(bool);
                         boardPanel.repaint();
-                    }
-                    
-               }
-               else if(sentence.startsWith("Shot"))
-               {
-                    int id=Integer.parseInt(sentence.substring(4));
-                
-                    if(id!=clientTank.getTankID())
-                    {
-                        boardPanel.getTank(id).Shot();
                     }
                     
                }
@@ -267,7 +271,7 @@ public class ClientGUI extends JFrame implements ActionListener,WindowListener
                {
                   int id=Integer.parseInt(sentence.substring(6));
                   
-                  if(id==clientTank.getTankID())
+                  if(id==clientJoueur.getId())
                   {
                         int response=JOptionPane.showConfirmDialog(null,"Sorry, You are loss. Do you want to try again ?","Tanks 2D Multiplayer Game",JOptionPane.OK_CANCEL_OPTION);
                         if(response==JOptionPane.OK_OPTION)
@@ -292,7 +296,7 @@ public class ClientGUI extends JFrame implements ActionListener,WindowListener
                {
                    int id=Integer.parseInt(sentence.substring(4));
                   
-                  if(id!=clientTank.getTankID())
+                  if(id!=clientJoueur.getId())
                   {
                       boardPanel.removeTank(id);
                   }
@@ -309,5 +313,29 @@ public class ClientGUI extends JFrame implements ActionListener,WindowListener
             
         }
     }
+
+    public void chercherServ()
+	{
+		//j'espÃ¨re que ca pose pas trop de problÃ¨me car lance au max 50 Thread
+		ExecutorService executor = Executors.newFixedThreadPool(50);
+		
+		String s = "di-";
+		String s2 = "c-";
+		int num;
+
+		for(num = 715; num < 730; num++)
+		{
+			for(int pc = 0; pc < 30; pc++)
+			{
+				String serv1 = s + num + "-" + String.format("%02d", pc);
+				String serv2 = s2 + serv1;
+				
+				executor.execute(new RechercheServeur(serv1, this.serverList));
+                executor.execute(new RechercheServeur(serv2, this.serverList));
+			}
+		}
+		System.out.println("Fin recherche serveur");
+
+	}
     
 }
