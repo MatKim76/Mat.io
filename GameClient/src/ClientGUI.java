@@ -275,7 +275,7 @@ public class ClientGUI extends JFrame implements ActionListener,WindowListener
                   
                     if(id == clientJoueur.getId())
                     {
-                        int response=JOptionPane.showConfirmDialog(null,"Sorry, You are loss. Do you want to try again ?","Tanks 2D Multiplayer Game",JOptionPane.OK_CANCEL_OPTION);
+                        int response=JOptionPane.showConfirmDialog(null,"You die. Do you want to try again ?","Tanks 2D Multiplayer Game",JOptionPane.OK_CANCEL_OPTION);
                         if(response==JOptionPane.OK_OPTION)
                         {
                             //client.closeAll();
@@ -323,6 +323,8 @@ public class ClientGUI extends JFrame implements ActionListener,WindowListener
 		String s = "di-";
 		String s2 = "c-";
 		int num;
+
+        this.serverList.addItem("localhost");
 
 		for(num = 715; num < 730; num++)
 		{

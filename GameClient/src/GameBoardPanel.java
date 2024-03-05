@@ -22,7 +22,7 @@ public class GameBoardPanel extends JPanel {
     private Joueur joueur;
     private int width=609;
     private int height=523;
-    private ArrayList<Joueur> joueurs;
+    private static ArrayList<Joueur> joueurs;
     private boolean gameStatus;
 
     public GameBoardPanel(Joueur joueur,Client client, boolean gameStatus) 
@@ -41,8 +41,8 @@ public class GameBoardPanel extends JPanel {
             joueurs.add(null);
         }
         
-        Thread t = new Thread( new CollisionJoueur(joueur, joueurs) );
-        t.start();
+        //Thread t = new Thread( new CollisionJoueur(joueur, joueurs) );
+        //t.start();
     }
 
     public void paintComponent(Graphics gr) {
@@ -155,7 +155,7 @@ public class GameBoardPanel extends JPanel {
 
     public void removeTank(int tankID)
     {
-        joueurs.set(tankID,null);
+        joueurs.set(tankID,null);//TODO regler probleme quand un joueur doit etre enlever mais ne l ai pas
     }
 
     public Joueur getTank(int id)
@@ -168,7 +168,7 @@ public class GameBoardPanel extends JPanel {
         gameStatus=status;
     }
   
-    public ArrayList<Joueur> getClients()
+    public static ArrayList<Joueur> getClients()
     {
         return joueurs;
     }

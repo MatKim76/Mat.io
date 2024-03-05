@@ -67,7 +67,7 @@ public class Server extends Thread {
                 ex.printStackTrace();
             }
             
-            System.out.println(sentence);
+            //System.out.println(sentence);
             if(sentence.startsWith("Hello"))
             {
                 int pos1 = sentence.indexOf('[');
