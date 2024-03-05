@@ -1,11 +1,7 @@
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
-import java.util.Map;
-
-import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 /*
  * GameBoardPanel.java
@@ -29,7 +25,6 @@ public class GameBoardPanel extends JPanel {
     private ArrayList<Joueur> joueurs;
     private boolean gameStatus;
 
-
     public GameBoardPanel(Joueur joueur,Client client, boolean gameStatus) 
     {
         this.joueur = joueur;
@@ -45,8 +40,11 @@ public class GameBoardPanel extends JPanel {
         {
             joueurs.add(null);
         }
-   
+        
+        Thread t = new Thread( new CollisionJoueur(joueur, joueurs) );
+        t.start();
     }
+
     public void paintComponent(Graphics gr) {
         super.paintComponent(gr);
         Graphics2D g=(Graphics2D)gr;
@@ -85,7 +83,7 @@ public class GameBoardPanel extends JPanel {
             }
         
             // Dessiner les autres éléments de la carte en ajustant leurs coordonnées de dessin
-            for(int i=1;i<joueurs.size();i++)  
+            for(int i = 1; i<joueurs.size(); i++)  
             {
                 if(joueurs.get(i)!=null)
                 {
@@ -154,14 +152,17 @@ public class GameBoardPanel extends JPanel {
     {
         joueurs.set(newTank.getId(),newTank);
     }
+
     public void removeTank(int tankID)
     {
         joueurs.set(tankID,null);
     }
+
     public Joueur getTank(int id)
     {
         return joueurs.get(id);
     }
+
     public void setGameStatus(boolean status)
     {
         gameStatus=status;

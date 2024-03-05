@@ -67,7 +67,7 @@ public class Server extends Thread {
                 ex.printStackTrace();
             }
             
-            //System.out.println(sentence);
+            System.out.println(sentence);
             if(sentence.startsWith("Hello"))
             {
                 int pos1 = sentence.indexOf('[');
@@ -84,16 +84,16 @@ public class Server extends Thread {
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
+
                 sendToClient(protocol.IDPacket(clients.size()+1));
+
                 try {
                     BroadCastMessage(protocol.NewClientPacket(nom, x, y, couleur, clients.size()+1));
                     sendAllClients(writer);
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
-                
                 clients.add(new ClientInfo(writer, nom, x, y, couleur, false));
-                
             }
             
             else if(sentence.startsWith("Update"))
@@ -107,17 +107,21 @@ public class Server extends Thread {
                 int id = Integer.parseInt(sentence.substring(pos2+1, pos3));
                 boolean bool = Boolean.parseBoolean(sentence.substring(pos3+1, sentence.length())); 
 
-                if(clients.size() < id-1 && clients.get(id-1)!=null)
+                if(clients.size() > id-1)
                 {
-                    clients.get(id-1).setPosX(x);
-                    clients.get(id-1).setPosY(y);
-                    clients.get(id-1).setBouclier(bool);
-                    try {
-                        BroadCastMessage(sentence);
-                    } catch (IOException ex) {
-                        ex.printStackTrace();
+                    if( clients.get(id-1)!=null)//TODO surement des probleme avec le -1
+                    {
+                        clients.get(id-1).setPosX(x);
+                        clients.get(id-1).setPosY(y);
+                        clients.get(id-1).setBouclier(bool);
+                        try {
+                            BroadCastMessage(sentence);
+                        } catch (IOException ex) {
+                            ex.printStackTrace();
+                        }
                     }
                 }
+                
                     
             }
             else if(sentence.startsWith("Remove"))
@@ -167,6 +171,7 @@ public class Server extends Thread {
                 clients.get(i).getWriterStream().writeUTF(mess);
         }
     }
+
     public void sendToClient(String message)
     {
          if(message.equals("exit"))

@@ -1,15 +1,5 @@
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.io.IOException;
-import java.net.Socket;
-/*
- * InputManager.java
- *
- * Created on 25 ����, 2008, 02:57 �
- *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
- */
 
 /**
  *
@@ -78,7 +68,6 @@ public class InputManager implements KeyListener, Runnable
 				joueur.charge();
 			}
 
-			//repaint();
             client.sendToServer(new MessageClient().UpdatePacket(joueur.getX(),joueur.getY(),joueur.getId(), joueur.getBouclier() ));
 
 			try 

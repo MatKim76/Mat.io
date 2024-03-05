@@ -58,10 +58,12 @@ public class Client {
     {
         return clientSocket;
     }
+    
     public String getIP()
     {
         return hostName;
     }
+
     public static Client getGameClient()
     {
         if(client==null)
@@ -73,6 +75,7 @@ public class Client {
             }
         return client;
     }
+
     public void closeAll()
     {
         try {

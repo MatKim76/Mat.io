@@ -219,18 +219,20 @@ public class ClientGUI extends JFrame implements ActionListener,WindowListener
             {
                 String sentence="";
                 try {
-                    sentence=reader.readUTF();                
+                    sentence = reader.readUTF();                
                 } catch (IOException ex) {
                     ex.printStackTrace();
-                }                
-               if(sentence.startsWith("ID"))
-               {
+                    isRunning = false;
+                }
+
+                if(sentence.startsWith("ID"))
+                {
                     int id=Integer.parseInt(sentence.substring(2));
                     clientJoueur.setId(id);
                     System.out.println("My ID= "+id);
-               }
-               else if(sentence.startsWith("NewClient"))
-               {
+                }
+                else if(sentence.startsWith("NewClient"))
+                {
                     int pos1 = sentence.indexOf('[');
                     int pos2 = sentence.indexOf(',');
                     int pos3 = sentence.indexOf(']');
@@ -246,9 +248,9 @@ public class ClientGUI extends JFrame implements ActionListener,WindowListener
                         boardPanel.registerNewTank( new Joueur(id, nom, ClientGUI.COULEURS[index], index ));
 
                     System.out.println("new Client " + id);
-               }   
-               else if(sentence.startsWith("Update"))
-               {
+                }   
+                else if(sentence.startsWith("Update"))
+                {
                     int pos1=sentence.indexOf(',');
                     int pos2=sentence.indexOf('|');
                     int pos3=sentence.indexOf('#');
@@ -266,13 +268,13 @@ public class ClientGUI extends JFrame implements ActionListener,WindowListener
                         boardPanel.repaint();
                     }
                     
-               }
-               else if(sentence.startsWith("Remove"))
-               {
-                  int id=Integer.parseInt(sentence.substring(6));
+                }
+                else if(sentence.startsWith("Remove"))
+                {
+                    int id = Integer.parseInt(sentence.substring(6));
                   
-                  if(id==clientJoueur.getId())
-                  {
+                    if(id == clientJoueur.getId())
+                    {
                         int response=JOptionPane.showConfirmDialog(null,"Sorry, You are loss. Do you want to try again ?","Tanks 2D Multiplayer Game",JOptionPane.OK_CANCEL_OPTION);
                         if(response==JOptionPane.OK_OPTION)
                         {
@@ -286,22 +288,21 @@ public class ClientGUI extends JFrame implements ActionListener,WindowListener
                         {
                             System.exit(0);
                         }
-                  }
-                  else
-                  {
-                      boardPanel.removeTank(id);
-                  }
-               }
-               else if(sentence.startsWith("Exit"))
-               {
-                   int id=Integer.parseInt(sentence.substring(4));
+                    }
+                    else
+                    {
+                        boardPanel.removeTank(id);
+                    }
+                }
+                else if(sentence.startsWith("Exit"))
+                {
+                    int id=Integer.parseInt(sentence.substring(4));
                   
-                  if(id!=clientJoueur.getId())
-                  {
-                      boardPanel.removeTank(id);
-                  }
-               }
-                      
+                    if(id!=clientJoueur.getId())
+                    {
+                        boardPanel.removeTank(id);
+                    }
+                }   
             }
            
             try {
