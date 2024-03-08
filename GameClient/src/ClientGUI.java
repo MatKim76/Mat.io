@@ -129,7 +129,7 @@ public class ClientGUI extends JFrame implements ActionListener,WindowListener
 
     private JTextField txtServeur;
 
-    private ServerGUI serverGui;
+    private ServerGUI serveurGUI;
 
     public ClientGUI()
     {
@@ -137,6 +137,7 @@ public class ClientGUI extends JFrame implements ActionListener,WindowListener
         this.setSize(width,height);
         this.setLocationRelativeTo(null);
         this.setLayout(null);
+        this.setResizable(false);
         
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.addWindowListener(this);
@@ -145,9 +146,10 @@ public class ClientGUI extends JFrame implements ActionListener,WindowListener
         this.panelEst = new JPanel();
         this.panelEst.setBackground(Color.RED);
         this.panelEst.setBounds(500, 0, 290, 580);
+        this.panelEst.setLayout(null);
 
         //Création du tableau de la liste des serveurs
-        this.tableauServeur = new JTable(10, 1);
+        this.tableauServeur = new JTable(1, 1);
         this.tableauServeur.setValueAt("localhost", 0, 0);
 
         this.tableauServeur.setDragEnabled(false);
@@ -156,37 +158,60 @@ public class ClientGUI extends JFrame implements ActionListener,WindowListener
         this.tableauServeur.setDefaultEditor(Object.class, null);
 
         this.scrollPane = new JScrollPane(this.tableauServeur);
-        this.scrollPane.setPreferredSize(new Dimension(250, 200));
+        this.scrollPane.setBounds(20, 20, 250, 150);
         
         this.panelEst.add(this.scrollPane);
 
         //Création du btn de recherche serveur
         this.btnSearch = new JButton("Rafraichir la liste");
         this.btnSearch.addActionListener(this);
+        this.btnSearch.setBounds(20, 180, 250, 25);
 
         this.panelEst.add(this.btnSearch);
 
-        this.panelEst.add(new JSeparator(SwingConstants.HORIZONTAL));
+        //Création de la séparation
+        JSeparator separator1 = new JSeparator(SwingConstants.HORIZONTAL);
+        separator1.setBounds(0, 230, 120, 1);
+
+        JSeparator separator2 = new JSeparator(SwingConstants.HORIZONTAL);
+        separator2.setBounds(170, 230, 120, 1);
+
+        JLabel labelOU = new JLabel("OU");
+        labelOU.setBounds(135, 225, 30, 10);
+
+        this.panelEst.add(separator1);
+        this.panelEst.add(separator2);
+        this.panelEst.add(labelOU);
 
         //Création du TextField pour les autres adresses
-
-        JPanel panelText = new JPanel();
-        panelText.setBackground(Color.BLUE);
-        panelText.setLayout(new GridLayout(2, 1));
-        panelText.setPreferredSize(new Dimension(250, 50));
+        JLabel labelIP = new JLabel("Adresse IP :");
+        labelIP.setBounds(20, 250, 250, 20);
 
         this.txtServeur = new JTextField(15);
+        this.txtServeur.setBounds(20, 270, 250, 20);
 
-        panelText.add( new JLabel("Adresse IP :") );
-        panelText.add(this.txtServeur);
+        this.panelEst.add( labelIP );
+        this.panelEst.add(this.txtServeur);
 
-        this.panelEst.add(panelText);
+        //Création nouveau séparateur
+        JSeparator separator = new JSeparator(SwingConstants.HORIZONTAL);
+        separator.setBounds(0, 320, 290, 1);
+
+        this.panelEst.add(separator);
 
         //Création du bouton pour serveur
-        this.btnServeur = new JButton("Lancer un serveur");
+        this.btnServeur = new JButton("Hoster un serveur");
         this.btnServeur.addActionListener(this);
+        this.btnServeur.setBounds(20, 340, 250, 25);
 
         this.panelEst.add(this.btnServeur);
+
+        //Création panel serveurGUI
+        this.serveurGUI = new ServerGUI();
+        this.serveurGUI.setBounds(20, 380, 250, 140);
+        this.serveurGUI.setVisible(false);
+
+        this.panelEst.add(this.serveurGUI);
 
 
         //Création du panel Ouest
@@ -256,7 +281,7 @@ public class ClientGUI extends JFrame implements ActionListener,WindowListener
 
         if(e.getSource() == this.btnServeur )
         {
-            new ServerGUI();
+            this.serveurGUI.setVisible(!this.serveurGUI.isVisible());
         }
         
     }

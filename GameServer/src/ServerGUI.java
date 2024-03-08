@@ -13,12 +13,13 @@ import javax.swing.JLabel;
  * To change this template, choose Tools | Template Manager
  * and open the template in the editor.
  */
+import javax.swing.JPanel;
 
 /**
  *
  * @author Mohamed Talaat Saad
  */
-public class ServerGUI extends JFrame implements ActionListener {
+public class ServerGUI extends JPanel implements ActionListener {
     
     private JButton startServerButton;
     private JButton stopServerButton;
@@ -28,34 +29,30 @@ public class ServerGUI extends JFrame implements ActionListener {
     /** Creates a new instance of ServerGUI */
     public ServerGUI() 
     {
-        setTitle("Game Server GUI");
-        setBounds(350,200,300,200);
-        this.setLocationRelativeTo(null);
+        //setTitle("Game Server GUI");
+        //setBounds(350,200,300,200);
+        //this.setLocationRelativeTo(null);
         
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        //setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
         setLayout(null);
-        startServerButton=new JButton("Start Server");
-        startServerButton.setBounds(20,30,120,25);
+        startServerButton=new JButton("Lancer Serveur");
+        startServerButton.setBounds(30,10,190,25);
         startServerButton.addActionListener(this);
         
-        stopServerButton=new JButton("Stop Server");
-        stopServerButton.setBounds(150,30,120,25);
+        stopServerButton=new JButton("Arrêter Serveur");
+        stopServerButton.setBounds(30,50,190,25);
         stopServerButton.addActionListener(this);
+        stopServerButton.setEnabled(false);
         
         statusLabel=new JLabel();
-        statusLabel.setBounds(80,90,200,25);
+        statusLabel.setBounds(30,90,200,25);
         
-        getContentPane().add(statusLabel);
-        getContentPane().add(startServerButton);
-        getContentPane().add(stopServerButton);
+        this.add(statusLabel);
+        this.add(startServerButton);
+        this.add(stopServerButton);
 
-        try
-        {
-            server = new Server();
-        } catch (SocketException ex) {
-            ex.printStackTrace();
-        }
+        
         
         setVisible(true);
     }
@@ -64,23 +61,33 @@ public class ServerGUI extends JFrame implements ActionListener {
     {
         if(e.getSource()==startServerButton)
         {
+            try
+            {
+                server = new Server();
+            } catch (SocketException ex) {
+                ex.printStackTrace();
+            }
+            
             server.start();
             startServerButton.setEnabled(false);
-            statusLabel.setText("Server is running.....");
+            stopServerButton.setEnabled(true);
+            statusLabel.setText("Le Serveur est en route.....");
         }
         
-        if(e.getSource()==stopServerButton)
+        if(e.getSource()==stopServerButton && server != null)
         {
             try 
             {
                 server.stopServer();
-                statusLabel.setText("Server is stopping.....");
+                statusLabel.setText("Arrêt du Serveur.");
                 try {
                     Thread.sleep(2000);
                 } catch (InterruptedException ex) {
                     ex.printStackTrace();
                 }
-                System.exit(0);
+                //System.exit(0);
+                startServerButton.setEnabled(true);
+                stopServerButton.setEnabled(false);
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
