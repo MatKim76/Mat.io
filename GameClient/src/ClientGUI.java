@@ -1,5 +1,7 @@
 
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
@@ -16,7 +18,12 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
+import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
 /*
  * ClientGUI.java
  *
@@ -25,6 +32,8 @@ import javax.swing.JTextField;
  * To change this template, choose Tools | Template Manager
  * and open the template in the editor.
  */
+import javax.swing.table.JTableHeader;
+import javax.swing.table.TableModel;
 
 /**
  *
@@ -57,7 +66,7 @@ public class ClientGUI extends JFrame implements ActionListener,WindowListener
     
     private SoundManger soundManger;
     
-    public ClientGUI() 
+    public ClientGUI(int a) 
     {
         setTitle("Mat.io");
         setSize(width,height);
@@ -110,6 +119,85 @@ public class ClientGUI extends JFrame implements ActionListener,WindowListener
         this.add(registerPanel);
               
         setVisible(true);
+    }
+
+    private JPanel panelOuest;
+    private JPanel panelEst;
+
+    private JTable tableauServeur;
+    private JScrollPane scrollPane;
+
+    private JTextField txtServeur;
+
+    private ServerGUI serverGui;
+
+    public ClientGUI()
+    {
+        this.setTitle("Mat.io");
+        this.setSize(width,height);
+        this.setLocationRelativeTo(null);
+        this.setLayout(null);
+        
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.addWindowListener(this);
+
+        //Création du panel ESt
+        this.panelEst = new JPanel();
+        this.panelEst.setBackground(Color.RED);
+        this.panelEst.setBounds(500, 0, 290, 580);
+
+        //Création du tableau de la liste des serveurs
+        this.tableauServeur = new JTable(10, 1);
+        this.tableauServeur.setValueAt("localhost", 0, 0);
+
+        this.tableauServeur.setDragEnabled(false);
+        this.tableauServeur.getColumnModel().getColumn(0).setHeaderValue("Serveurs disponibles :");
+        this.tableauServeur.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        this.tableauServeur.setDefaultEditor(Object.class, null);
+
+        this.scrollPane = new JScrollPane(this.tableauServeur);
+        this.scrollPane.setPreferredSize(new Dimension(250, 200));
+        
+        this.panelEst.add(this.scrollPane);
+
+        //Création du btn de recherche serveur
+        this.btnSearch = new JButton("Rafraichir la liste");
+        this.btnSearch.addActionListener(this);
+
+        this.panelEst.add(this.btnSearch);
+
+        this.panelEst.add(new JSeparator(SwingConstants.HORIZONTAL));
+
+        //Création du TextField pour les autres adresses
+
+        JPanel panelText = new JPanel();
+        panelText.setBackground(Color.BLUE);
+        panelText.setLayout(new GridLayout(2, 1));
+        panelText.setPreferredSize(new Dimension(250, 50));
+
+        this.txtServeur = new JTextField(15);
+
+        panelText.add( new JLabel("Adresse IP :") );
+        panelText.add(this.txtServeur);
+
+        this.panelEst.add(panelText);
+
+        //Création du bouton pour serveur
+        this.btnServeur = new JButton("Lancer un serveur");
+        this.btnServeur.addActionListener(this);
+
+        this.panelEst.add(this.btnServeur);
+
+
+        //Création du panel Ouest
+        this.panelOuest = new JPanel();
+        this.panelOuest.setBackground(Color.YELLOW);
+        this.panelOuest.setBounds(0, 0, 500, 580);
+
+        this.add(this.panelOuest);
+        this.add(this.panelEst);
+
+        this.setVisible(true);
     }
     
     public void actionPerformed(ActionEvent e) 
