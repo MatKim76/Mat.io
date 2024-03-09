@@ -1,7 +1,5 @@
 
 import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
@@ -9,21 +7,12 @@ import java.awt.event.WindowListener;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSeparator;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.ListSelectionModel;
-import javax.swing.SwingConstants;
+import javax.swing.*;
+import javax.swing.border.BevelBorder;
 /*
  * ClientGUI.java
  *
@@ -32,8 +21,7 @@ import javax.swing.SwingConstants;
  * To change this template, choose Tools | Template Manager
  * and open the template in the editor.
  */
-import javax.swing.table.JTableHeader;
-import javax.swing.table.TableModel;
+ import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -41,86 +29,20 @@ import javax.swing.table.TableModel;
  */
 public class ClientGUI extends JFrame implements ActionListener,WindowListener 
 {
-    /** Creates a new instance of ClientGUI */
-    private static final Color[] COULEURS = {Color.BLUE, Color.CYAN, Color.DARK_GRAY, Color.GRAY, Color.GREEN, Color.LIGHT_GRAY, Color.MAGENTA, Color.ORANGE, Color.PINK, Color.RED, Color.YELLOW};
-
-    private JLabel ipaddressLabel;
-    private JLabel portLabel;
-    
-    private JTextField ipaddressText;
-    private JTextField portText;
-    
-    private JButton registerButton;
-    
-    private JPanel registerPanel;
+    /** Creates a new instance of ClientGUI */    
     private Client client;
     private Joueur clientJoueur;
     
     private JButton btnServeur;
 	private JButton btnSearch;
-    private JComboBox<String> serverList;
     
     int width=790,height=580;
     boolean isRunning=true;
     private GameBoardPanel boardPanel;
     
     private SoundManger soundManger;
-    
-    public ClientGUI(int a) 
-    {
-        setTitle("Mat.io");
-        setSize(width,height);
-        this.setLocationRelativeTo(null);
-        
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        addWindowListener(this);
 
-        registerPanel=new JPanel();
-        registerPanel.setBackground(Color.YELLOW);
-        registerPanel.setSize(width, height);
-        //registerPanel.setLayout(new );
-     
-        ipaddressLabel=new JLabel("IP address: ");
-        portLabel=new JLabel("Port: ");
-        ipaddressText=new JTextField("localhost");
-        portText=new JTextField("11111");
-       
-        registerButton=new JButton("Register");
-        registerButton.addActionListener(this);
-        //registerButton.setFocusable(true);
-        
-        this.btnServeur = new JButton("Serveur");
-        this.btnServeur.addActionListener(this);
-
-        this.btnSearch = new JButton("Recherche de serveur");
-        this.btnSearch.addActionListener(this);
-
-        this.serverList = new JComboBox<>();
-        this.serverList.addItem("localhost");
-
-
-        registerPanel.add(ipaddressLabel);
-        registerPanel.add(ipaddressText);
-        registerPanel.add(portLabel);
-        registerPanel.add(portText);
-        registerPanel.add(registerButton);
-
-        registerPanel.add(this.btnSearch);
-        registerPanel.add(this.btnServeur);
-        registerPanel.add(this.serverList);
-
-        client=Client.getGameClient();
-
-        
-
-        //this.boardPanel   .setVisible(false);
-        //this.registerPanel.setVisible(true);
-        
-        this.add(registerPanel);
-              
-        setVisible(true);
-    }
-
+    private JPanel panelGeneral;
     private JPanel panelOuest;
     private JPanel panelEst;
 
@@ -131,17 +53,38 @@ public class ClientGUI extends JFrame implements ActionListener,WindowListener
 
     private ServerGUI serveurGUI;
 
+    private JButton btnChoixCouleur;
+    private JButton btnChoixImage;
+
+    private JLabel labelCouleur;
+    private JLabel labelImage; 
+
+    private JTextField txtPseudo;
+
+    private JButton btnLancer;
+    private JLabel labelErreur;
+
     public ClientGUI()
     {
+        /*-------------------Frame---------------------*/
+
         this.setTitle("Mat.io");
         this.setSize(width,height);
         this.setLocationRelativeTo(null);
-        this.setLayout(null);
         this.setResizable(false);
         
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.addWindowListener(this);
 
+        this.client = Client.getGameClient();
+
+        this.panelGeneral = new JPanel();
+        this.panelGeneral.setLayout(null);
+
+        this.add(this.panelGeneral);
+
+        /*-------------------Panel Est---------------------*/
+        
         //Création du panel ESt
         this.panelEst = new JPanel();
         this.panelEst.setBackground(Color.RED);
@@ -149,11 +92,9 @@ public class ClientGUI extends JFrame implements ActionListener,WindowListener
         this.panelEst.setLayout(null);
 
         //Création du tableau de la liste des serveurs
-        this.tableauServeur = new JTable(1, 1);
-        this.tableauServeur.setValueAt("localhost", 0, 0);
-
+        this.tableauServeur = new JTable(0, 1);
         this.tableauServeur.setDragEnabled(false);
-        this.tableauServeur.getColumnModel().getColumn(0).setHeaderValue("Serveurs disponibles :");
+        this.tableauServeur.getColumnModel().getColumn(0).setHeaderValue("Serveurs IUT disponibles :");
         this.tableauServeur.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         this.tableauServeur.setDefaultEditor(Object.class, null);
 
@@ -213,47 +154,120 @@ public class ClientGUI extends JFrame implements ActionListener,WindowListener
 
         this.panelEst.add(this.serveurGUI);
 
+        this.panelGeneral.add(this.panelEst);
 
+        /*-------------------Panel Ouest---------------------*/
+       
         //Création du panel Ouest
         this.panelOuest = new JPanel();
         this.panelOuest.setBackground(Color.YELLOW);
         this.panelOuest.setBounds(0, 0, 500, 580);
+        this.panelOuest.setLayout(null);
 
-        this.add(this.panelOuest);
-        this.add(this.panelEst);
+        //Création coté de choix couleur
+        this.labelCouleur = new JLabel();
+        this.labelCouleur.setBackground(ChoixCouleur.getRandomCouleur());
+        this.labelCouleur.setOpaque(true);
+        this.labelCouleur.setBounds(20, 20, 200, 200);
+        this.labelCouleur.setBorder(new BevelBorder(1, Color.BLACK, Color.BLACK));
+
+        this.btnChoixCouleur = new JButton("Choisir une couleur");
+        this.btnChoixCouleur.addActionListener(this);
+        this.btnChoixCouleur.setBounds(20, 230, 200, 25);
+
+        this.panelOuest.add(this.labelCouleur);
+        this.panelOuest.add(this.btnChoixCouleur);
+
+        //Création coté de choix Image
+        this.labelImage = new JLabel();
+        this.labelImage.setBackground(Color.BLUE);
+        this.labelImage.setOpaque(true);
+        this.labelImage.setBounds(280, 20, 200, 200);
+        this.labelImage.setBorder(new BevelBorder(1, Color.BLACK, Color.BLACK));
+
+        this.btnChoixImage = new JButton("Choisir une image");
+        this.btnChoixImage.addActionListener(this);
+        this.btnChoixImage.setBounds(280, 230, 200, 25);
+
+        this.panelOuest.add(this.labelImage);
+        this.panelOuest.add(this.btnChoixImage);
+
+        //Création txt pour pseudo
+        JLabel labelPseudo = new JLabel("Votre pseudo : ");
+        labelPseudo.setBounds(20, 330, 200, 20);
+
+        this.txtPseudo = new JTextField(15);
+        this.txtPseudo.setBounds(20, 350, 280, 20);
+
+        this.panelOuest.add(labelPseudo);
+        this.panelOuest.add(this.txtPseudo);
+
+        //Création du bouton de lancement
+        this.btnLancer = new JButton("Lancer la partie");
+        this.btnLancer.addActionListener(this);
+        this.btnLancer.setBounds(20, 470, 460, 50);
+
+        this.panelOuest.add(this.btnLancer);
+
+        //Création label erreur
+        this.labelErreur = new JLabel("");
+        this.labelErreur.setBounds(20, 450, 460, 20);
+
+        this.panelOuest.add(this.labelErreur);
+
+        this.panelGeneral.add(this.panelOuest);
 
         this.setVisible(true);
     }
     
     public void actionPerformed(ActionEvent e) 
     {
-        if(e.getSource() == registerButton)
+        if(e.getSource() == this.btnLancer)
         {
-            registerButton.setEnabled(false);
+            this.btnLancer.setEnabled(false);
             
             try 
             {
-                //Création du Joueur
-                String nomJoueur = JOptionPane.showInputDialog(null, "Veuillez choisir un pseudo :");
-                while( nomJoueur.length() > 10 )
-                    nomJoueur = JOptionPane.showInputDialog(null, "Pseudo trop long (10 cara max) :");
-                
-                int indexCouleur = (int)(Math.random()*ClientGUI.COULEURS.length);
+                //vérif de serveur
+                String serveur = this.txtServeur.getText();
+                if( serveur.equals("") )
+                {
+                    if( this.tableauServeur.getSelectedRow() == -1)
+                    {
+                        this.labelErreur.setText("Veuillez sélectionner un serveur");
+                        this.btnLancer.setEnabled(true);
+                        return;
+                    }
+                    else
+                    {
+                        serveur = (String) this.tableauServeur.getValueAt(this.tableauServeur.getSelectedRow(), 0);
+                    }
+                }
 
-                this.clientJoueur = new Joueur(1, nomJoueur, ClientGUI.COULEURS[indexCouleur], indexCouleur );
-                boardPanel=new GameBoardPanel(clientJoueur,client,false);
+                //vérif pseudo
+                String[] randomPseudo = {"Boudemousse", "Le Corbeau", "Chariot", "Navet", "Calin"}; 
+                String pseudo = this.txtPseudo.getText();
+                if (pseudo.equals(""))
+                {
+                    pseudo = randomPseudo[(int)(Math.random()*randomPseudo.length)];
+                }
+                
+                //Création du Joueur
+                Color coul = this.labelCouleur.getBackground();
+
+                this.clientJoueur = new Joueur(1, pseudo, coul, ChoixCouleur.getIndex(coul) );
+                this.boardPanel = new GameBoardPanel(clientJoueur,client,false);
                 this.add(boardPanel);  
 
-                String selectedServer = (String) this.serverList.getSelectedItem();
-                client.register(selectedServer, 11111, clientJoueur, indexCouleur);
+                this.client.register(serveur, 11111, clientJoueur, ChoixCouleur.getIndex(coul));
                 
                 //soundManger=new SoundManger();
                 
                 //Afficher le plateau
                 this.boardPanel.setGameStatus(true);
-                this.registerPanel.setVisible(false);
+                this.panelGeneral.setVisible(false);
                 this.boardPanel.setVisible(true);
-                boardPanel.repaint();
+                this.boardPanel.repaint();
 
                 try {
                     Thread.sleep(500);
@@ -262,20 +276,19 @@ public class ClientGUI extends JFrame implements ActionListener,WindowListener
                 }
                 new ClientRecivingThread(client.getSocket()).start();
 
-                registerButton.setFocusable(false);
-                boardPanel.setFocusable(true);
+                this.boardPanel.setFocusable(true);
             } 
             catch (IOException ex) 
             {
-                JOptionPane.showMessageDialog(this,"The Server is not running, try again later!","Tanks 2D Multiplayer Game",JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(this,"Le serveur choisi n'est pas disponible !","Mat.io",JOptionPane.INFORMATION_MESSAGE);
                 System.out.println("The Server is not running!");
-                registerButton.setEnabled(true);
+                this.btnLancer.setEnabled(true);
+                chercherServ();
             }
         }
 
         if (e.getSource() == this.btnSearch)
 		{
-            this.serverList.removeAllItems();
 			chercherServ();
         }
 
@@ -283,12 +296,12 @@ public class ClientGUI extends JFrame implements ActionListener,WindowListener
         {
             this.serveurGUI.setVisible(!this.serveurGUI.isVisible());
         }
+
+        if(e.getSource() == this.btnChoixCouleur)
+        {
+            new ChoixCouleur(this.labelCouleur);
+        }
         
-    }
-
-    public void windowOpened(WindowEvent e) 
-    {
-
     }
 
     public void windowClosing(WindowEvent e) 
@@ -296,21 +309,13 @@ public class ClientGUI extends JFrame implements ActionListener,WindowListener
        // int response=JOptionPane.showConfirmDialog(this,"Are you sure you want to exit ?","Tanks 2D Multiplayer Game!",JOptionPane.YES_NO_OPTION);
         Client.getGameClient().sendToServer(new MessageClient().ExitMessagePacket(clientJoueur.getId()));
     }
-    public void windowClosed(WindowEvent e) {
-        
-    }
 
-    public void windowIconified(WindowEvent e) {
-    }
-
-    public void windowDeiconified(WindowEvent e) {
-    }
-
-    public void windowActivated(WindowEvent e) {
-    }
-
-    public void windowDeactivated(WindowEvent e) {
-    }
+    public void windowOpened(WindowEvent e){}
+    public void windowClosed(WindowEvent e) {}
+    public void windowIconified(WindowEvent e) {}
+    public void windowDeiconified(WindowEvent e) {}
+    public void windowActivated(WindowEvent e) {}
+    public void windowDeactivated(WindowEvent e) {}
     
     public class ClientRecivingThread extends Thread
     {
@@ -358,7 +363,7 @@ public class ClientGUI extends JFrame implements ActionListener,WindowListener
                     int id= Integer.parseInt(sentence.substring(pos4+1, sentence.length()));
 
                     if(id!=clientJoueur.getId())
-                        boardPanel.registerNewTank( new Joueur(id, nom, ClientGUI.COULEURS[index], index ));
+                        boardPanel.registerNewTank( new Joueur(id, nom, ChoixCouleur.getColorFromString(ChoixCouleur.COULEURS[index]), index ));
 
                     System.out.println("new Client " + id);
                 }   
@@ -388,7 +393,7 @@ public class ClientGUI extends JFrame implements ActionListener,WindowListener
                   
                     if(id == clientJoueur.getId())
                     {
-                        int response=JOptionPane.showConfirmDialog(null,"You die. Do you want to try again ?","Tanks 2D Multiplayer Game",JOptionPane.OK_CANCEL_OPTION);
+                        /*int response=JOptionPane.showConfirmDialog(null,"You die. Do you want to try again ?","Mat.io",JOptionPane.OK_CANCEL_OPTION);
                         if(response==JOptionPane.OK_OPTION)
                         {
                             //client.closeAll();
@@ -400,7 +405,15 @@ public class ClientGUI extends JFrame implements ActionListener,WindowListener
                         else
                         {
                             System.exit(0);
-                        }
+                        }*/
+
+                        ClientGUI.this.btnLancer.setEnabled(true);
+
+                        ClientGUI.this.boardPanel.setGameStatus(false);
+                        ClientGUI.this.panelGeneral.setVisible(true);
+                        ClientGUI.this.boardPanel.setVisible(false);
+
+                        ClientGUI.this.panelGeneral.setFocusable(true);
                     }
                     else
                     {
@@ -437,7 +450,9 @@ public class ClientGUI extends JFrame implements ActionListener,WindowListener
 		String s2 = "c-";
 		int num;
 
-        this.serverList.addItem("localhost");
+        ArrayList<String> lstServ = new ArrayList<String>();
+
+        executor.execute(new RechercheServeur("localhost", lstServ));
 
 		for(num = 715; num < 730; num++)
 		{
@@ -446,12 +461,22 @@ public class ClientGUI extends JFrame implements ActionListener,WindowListener
 				String serv1 = s + num + "-" + String.format("%02d", pc);
 				String serv2 = s2 + serv1;
 				
-				executor.execute(new RechercheServeur(serv1, this.serverList));
-                executor.execute(new RechercheServeur(serv2, this.serverList));
+				executor.execute(new RechercheServeur(serv1, lstServ));
+                executor.execute(new RechercheServeur(serv2, lstServ));
 			}
 		}
-		System.out.println("Fin recherche serveur");
 
+        if(lstServ.size() > 0)
+        {
+            DefaultTableModel model = (DefaultTableModel) tableauServeur.getModel();
+            model.setRowCount(0);
+
+            for(int i = 0; i < lstServ.size(); i++) 
+            {
+                model.addRow(new Object[]{lstServ.get(i)});
+            }
+        }
+
+		System.out.println("Fin recherche serveur");
 	}
-    
 }

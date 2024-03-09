@@ -1,4 +1,6 @@
 import java.net.Socket;
+import java.util.ArrayList;
+
 import javax.swing.JComboBox;
 
 public class RechercheServeur implements Runnable
@@ -6,9 +8,9 @@ public class RechercheServeur implements Runnable
 	private static int port = 11111;
 
 	private String serv;
-	private JComboBox<String> serverList;
+	private ArrayList<String> serverList;
 
-	public RechercheServeur(String serv, JComboBox<String> serverList)
+	public RechercheServeur(String serv, ArrayList<String> serverList)
 	{
 		this.serv = serv;
 		this.serverList = serverList;
@@ -20,7 +22,7 @@ public class RechercheServeur implements Runnable
 		try
 		{
 			Socket socket = new Socket(this.serv, port);
-			this.serverList.addItem(this.serv);
+			this.serverList.add(this.serv);
 			socket.close();
 		} catch (Exception e) {}
 	}

@@ -62,8 +62,9 @@ public class Server extends Thread {
                 ex.printStackTrace();
             }
             try {
-                sentence=reader.readUTF();
+                sentence = reader.readUTF();
             } catch (IOException ex) {
+                sentence = "";
                 ex.printStackTrace();
             }
             
@@ -151,8 +152,8 @@ public class Server extends Thread {
         
         try {
             reader.close();
-        writer.close();
-        serverSocket.close();
+            writer.close();
+            serverSocket.close();
             clientSocket.close();
         } catch (IOException ex) {
             ex.printStackTrace();
