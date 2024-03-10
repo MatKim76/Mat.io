@@ -17,7 +17,6 @@ public class ImageIconReceiver {
         // Réception du tableau d'octets
         InputStream inputStream = socket.getInputStream();
         ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
-        //byte[] imageData = (byte[]) objectInputStream.readObject();
         ImageIcon image = (ImageIcon)  objectInputStream.readObject();
 
         // Convertir le tableau d'octets en ImageIcon

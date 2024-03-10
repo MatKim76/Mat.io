@@ -1,5 +1,6 @@
 
 import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
@@ -294,11 +295,23 @@ public class ClientGUI extends JFrame implements ActionListener,WindowListener
                 //Création du Joueur
                 Color coul = this.labelCouleur.getBackground();
 
-                this.clientJoueur = new Joueur(1, pseudo, coul, ChoixCouleur.getIndex(coul) );
+                if(this.rbCouleur.isSelected())
+                {
+                    this.clientJoueur = new Joueur(1, pseudo, coul, ChoixCouleur.getIndex(coul) );
+                } 
+                else if(this.rbImage.isSelected())
+                {
+                    BufferedImage bufferedImage = new BufferedImage(200, 200, BufferedImage.TYPE_INT_ARGB);
+                    this.labelImage.getIcon().paintIcon(null, bufferedImage.getGraphics(), 0, 0);
+                                
+                    this.clientJoueur = new Joueur(1, pseudo, bufferedImage);
+                }
+
+
                 this.boardPanel = new GameBoardPanel(clientJoueur,client,false);
                 this.add(boardPanel);  
 
-                this.client.register(serveur, 11111, clientJoueur, ChoixCouleur.getIndex(coul));
+                this.client.register(serveur, 11111, clientJoueur);
                 
                 //soundManger=new SoundManger();
                 
@@ -432,9 +445,9 @@ public class ClientGUI extends JFrame implements ActionListener,WindowListener
                     int x = Integer.parseInt(sentence.substring(pos1+1, pos2));
                     int y = Integer.parseInt(sentence.substring(pos2+1, pos3));
                     int index = Integer.parseInt(sentence.substring(pos3+1, pos4));
-                    int id= Integer.parseInt(sentence.substring(pos4+1, sentence.length()));
+                    int id = Integer.parseInt(sentence.substring(pos4+1, sentence.length()));
 
-                    if(id!=clientJoueur.getId())
+                    if(id !=clientJoueur.getId())
                         boardPanel.registerNewTank( new Joueur(id, nom, ChoixCouleur.getColorFromString(ChoixCouleur.COULEURS[index]), index ));
 
                     System.out.println("new Client " + id);

@@ -1,7 +1,13 @@
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.net.Socket;
+
+import javax.imageio.ImageIO;
 
 /**
  *
@@ -26,14 +32,45 @@ public class Client {
         protocol = new MessageClient();
     }
 
-    public void register(String ip, int port, Joueur joueur, int indexCouleur) throws IOException
+    public void register(String ip, int port, Joueur joueur) throws IOException 
     {
-        this.serverPort=port;
-        this.hostName=ip;
-        clientSocket=new Socket(ip,port);
-        writer=new DataOutputStream(clientSocket.getOutputStream());
-      
-        writer.writeUTF(protocol.RegisterPacket(joueur.getNom(), joueur.getX(), joueur.getY(), indexCouleur));
+        this.serverPort = port;
+        this.hostName = ip;
+        clientSocket = new Socket(ip, port);
+        writer = new DataOutputStream(clientSocket.getOutputStream());
+    
+        writer.writeUTF(protocol.RegisterPacket(joueur.getNom(), joueur.getX(), joueur.getY(), joueur.getIndexCouleur()));
+    
+        if (joueur.getIndexCouleur() == -1) 
+        {
+            envoyerImage(clientSocket, joueur.getImage());
+        }
+    }
+    
+    public void envoyerImage(Socket socket, BufferedImage image)
+    {
+        try {
+            OutputStream outputStream = socket.getOutputStream();
+            
+            // Convertir l'image en byte array
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            ImageIO.write(image, "png", byteArrayOutputStream);
+            byte[] imageBytes = byteArrayOutputStream.toByteArray();
+            
+            // Envoyer la taille de l'image
+            DataOutputStream dataOutputStream = new DataOutputStream(outputStream);
+            dataOutputStream.writeInt(imageBytes.length);
+            dataOutputStream.flush();
+            
+            // Envoyer l'image
+            outputStream.write(imageBytes);
+            outputStream.flush();
+            
+            socket.close();
+            System.out.println("Image envoyée avec succès.");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
   
     public void sendToServer(String message)
@@ -47,9 +84,7 @@ public class Client {
                  //System.out.println(message);
                  writer=new DataOutputStream(s.getOutputStream());
                 writer.writeUTF(message);
-            } catch (IOException ex) {
-
-            }
+            } catch (IOException ex) {}
         }
 
     }

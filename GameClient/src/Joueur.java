@@ -1,4 +1,5 @@
 import java.awt.Color;
+import java.awt.image.BufferedImage;
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -13,8 +14,10 @@ public class Joueur implements Comparable<Joueur>, Serializable
 	
 	private int id;
     private String nom;
+
 	private Color couleur;
 	private int indexCouleur;
+	private BufferedImage image;
 
 	private int chargeBouclier;
 	private boolean bouclier;
@@ -28,6 +31,13 @@ public class Joueur implements Comparable<Joueur>, Serializable
 
 	private int vitesse;
 
+	public Joueur(int id, String nom, BufferedImage image)
+	{
+		this(id, nom, null, -1);
+
+		this.image = image;
+	}
+
 	public Joueur(int id, String nom, Color couleur, int indexCouleur)
 	{
 		this.id = id;
@@ -38,9 +48,6 @@ public class Joueur implements Comparable<Joueur>, Serializable
 		this.maxBouclier = Joueur.MAX_BOUCLIER;
 		this.chargeBouclier = Joueur.MAX_BOUCLIER;
 		this.bouclier = false;
-
-		//this.x = (int)(Math.random()*map.getLongueur());
-		//this.y = (int)(Math.random()*map.getHauteur());
 
         this.x = (int)(Math.random()*Joueur.LARGEUR);
         this.y = (int)(Math.random()*Joueur.HAUTEUR);
@@ -123,6 +130,7 @@ public class Joueur implements Comparable<Joueur>, Serializable
 	public int getKill() {return this.kill;}
     public int getId() {return this.id;}
 	public int getIndexCouleur() {return this.indexCouleur;}
+	public BufferedImage getImage() {return this.image;}
 
 	@Override
 	public int compareTo(Joueur j) 

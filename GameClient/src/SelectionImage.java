@@ -28,7 +28,7 @@ public class SelectionImage extends JPanel implements MouseListener, MouseMotion
         this.setPreferredSize(new Dimension(600, 600)); // Taille de la fenêtre
         this.addMouseListener(this);
         this.addMouseMotionListener(this);
-        this. addMouseWheelListener(this);
+        this.addMouseWheelListener(this);
 
         JButton saveButton = new JButton("Enregistrer");
         saveButton.addActionListener(new ActionListener() 

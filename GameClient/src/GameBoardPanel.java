@@ -1,9 +1,12 @@
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 /*
  * GameBoardPanel.java
@@ -54,6 +57,8 @@ public class GameBoardPanel extends JPanel {
  
         if(gameStatus) 
         {
+            g.setColor(Color.BLACK);
+            
             // Récupérer la position du joueur
             int joueurX = this.joueur.getX();
             int joueurY = this.joueur.getY();
@@ -66,9 +71,17 @@ public class GameBoardPanel extends JPanel {
             int posY = joueurY + joueurDessinY;
 
             // Dessin du joueur controler
-            g.setColor(joueur.getCouleur());
-            g.fillRect(posX, posY, joueur.getTaille(), joueur.getTaille());
+            if(joueur.getCouleur() != null)
+            {
+                g.setColor(joueur.getCouleur());
+                g.fillRect(posX, posY, joueur.getTaille(), joueur.getTaille());
+            }
+            else
+            {
+                g.drawImage(joueur.getImage(), posX, posY, joueur.getTaille(), joueur.getTaille(), null);
+            }
             g.drawString(joueur.getNom() + "", posX + 6 - joueur.getNom().length() * 3, posY + joueur.getTaille() + 10);
+
 
             if (joueur.getBouclier()) {
                 g.setColor(Color.BLUE);
@@ -87,10 +100,18 @@ public class GameBoardPanel extends JPanel {
                     int dessinY = joueurDessinY + joueurs.get(i).getY();
             
                     // Dessiner le joueur à sa nouvelle position calculée
-                    g.setColor(joueurs.get(i).getCouleur());
-                    g.fillRect(dessinX, dessinY, joueurs.get(i).getTaille(), joueurs.get(i).getTaille());
+                    if(joueurs.get(i).getCouleur() != null)
+                    {
+                        g.setColor(joueurs.get(i).getCouleur());
+                        g.fillRect(dessinX, dessinY, joueurs.get(i).getTaille(), joueurs.get(i).getTaille());
+                    }
+                    else
+                    {
+                        g.drawImage(joueurs.get(i).getImage(), dessinX, dessinY, joueurs.get(i).getTaille(), joueurs.get(i).getTaille(), null);
+                    }
                     g.drawString(joueurs.get(i).getNom() + "", dessinX + 6 - joueurs.get(i).getNom().length() * 3, dessinY + joueurs.get(i).getTaille() + 10);
-            
+
+                    
                     if (joueurs.get(i).getBouclier()) {
                         g.setColor(Color.BLUE);
                         g.drawRect(dessinX - 5, dessinY - 5, joueurs.get(i).getTaille() + 10, joueurs.get(i).getTaille() + 10);

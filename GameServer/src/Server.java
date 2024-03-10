@@ -1,6 +1,12 @@
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
@@ -13,6 +19,9 @@ import java.util.ArrayList;
  * To change this template, choose Tools | Template Manager
  * and open the template in the editor.
  */
+
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 
 /**
  *
@@ -28,16 +37,20 @@ public class Server extends Thread {
     private ServerSocket serverSocket;
     private int serverPort=11111;
     
+    private ArrayList<BufferedImage> images;
    
     private DataInputStream reader;
     private DataOutputStream writer;
    
     private MessageServer protocol;
     private boolean running=true;
+
     public Server() throws SocketException 
     {
-        clients=new ArrayList<ClientInfo>();
-        protocol=new MessageServer();
+        this.clients = new ArrayList<ClientInfo>();
+        this.protocol = new MessageServer();
+        this.images = new ArrayList<BufferedImage>();
+
         try {
             serverSocket=new ServerSocket(serverPort);
         } catch (IOException ex) {
@@ -81,9 +94,14 @@ public class Server extends Thread {
                 int couleur = Integer.parseInt(sentence.substring(pos3+1, sentence.length()));
               
                 try {
-                    writer=new DataOutputStream(clientSocket.getOutputStream());
+                    writer = new DataOutputStream(clientSocket.getOutputStream());
                 } catch (IOException ex) {
                     ex.printStackTrace();
+                }
+
+                if(couleur == -1)
+                {
+                    recevoirImage(clientSocket);
                 }
 
                 sendToClient(protocol.IDPacket(clients.size()+1));
@@ -122,9 +140,8 @@ public class Server extends Thread {
                         }
                     }
                 }
-                
-                    
             }
+
             else if(sentence.startsWith("Remove"))
             {
                 int id=Integer.parseInt(sentence.substring(6));
@@ -135,7 +152,8 @@ public class Server extends Thread {
                     ex.printStackTrace();
                 }
                 clients.set(id-1,null);
-            }     
+            } 
+                
             else if(sentence.startsWith("Exit"))
             {
                 int id=Integer.parseInt(sentence.substring(4));
@@ -148,6 +166,17 @@ public class Server extends Thread {
                 if(clients.get(id-1)!=null)
                     clients.set(id-1,null);
             }
+
+            else if(sentence.startsWith("Image"))
+            {
+                try{
+                    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                    ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
+                    objectOutputStream.writeObject(images.get(images.size() - 1));
+                }
+                catch(Exception e){System.out.println(e);}
+                System.out.println("envoie Image Serverur");
+            }
         }
         
         try {
@@ -159,6 +188,35 @@ public class Server extends Thread {
             ex.printStackTrace();
         }
     }
+
+    public void recevoirImage(Socket socket)
+    {
+        try {
+            InputStream inputStream = socket.getInputStream();
+            
+            // Lire la taille de l'image
+            DataInputStream dataInputStream = new DataInputStream(inputStream);
+            int imageLength = dataInputStream.readInt();
+            
+            // Lire l'image
+            byte[] imageBytes = new byte[imageLength];
+            int bytesRead = 0;
+            while (bytesRead < imageLength) {
+                bytesRead += inputStream.read(imageBytes, bytesRead, imageLength - bytesRead);
+            }
+            
+            // Convertir le byte array en BufferedImage
+            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(imageBytes);
+            BufferedImage image = ImageIO.read(byteArrayInputStream);
+            
+            System.out.println("Image reçue avec succès.");
+            images.add(image);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void stopServer() throws IOException
     {
         running=false;
@@ -191,6 +249,7 @@ public class Server extends Thread {
     {
         int x, y, index;
         String nom;
+
         for(int i=0;i<clients.size();i++)
         {
             if(clients.get(i)!=null) 
