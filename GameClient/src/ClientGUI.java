@@ -4,15 +4,19 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.awt.image.BufferedImage;
 import java.io.DataInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
+import javax.swing.filechooser.FileNameExtensionFilter;
 /*
  * ClientGUI.java
  *
@@ -55,6 +59,7 @@ public class ClientGUI extends JFrame implements ActionListener,WindowListener
 
     private JButton btnChoixCouleur;
     private JButton btnChoixImage;
+    private JButton btnRecadrage;
 
     private JLabel labelCouleur;
     private JLabel labelImage; 
@@ -63,6 +68,12 @@ public class ClientGUI extends JFrame implements ActionListener,WindowListener
 
     private JButton btnLancer;
     private JLabel labelErreur;
+    private JButton btnTuto;
+
+    private JRadioButton rbCouleur;
+    private JRadioButton rbImage;
+
+    private BufferedImage image;
 
     public ClientGUI()
     {
@@ -97,6 +108,7 @@ public class ClientGUI extends JFrame implements ActionListener,WindowListener
         this.tableauServeur.getColumnModel().getColumn(0).setHeaderValue("Serveurs IUT disponibles :");
         this.tableauServeur.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         this.tableauServeur.setDefaultEditor(Object.class, null);
+        chercherServ();
 
         this.scrollPane = new JScrollPane(this.tableauServeur);
         this.scrollPane.setBounds(20, 20, 250, 150);
@@ -173,7 +185,7 @@ public class ClientGUI extends JFrame implements ActionListener,WindowListener
 
         this.btnChoixCouleur = new JButton("Choisir une couleur");
         this.btnChoixCouleur.addActionListener(this);
-        this.btnChoixCouleur.setBounds(20, 230, 200, 25);
+        this.btnChoixCouleur.setBounds(45, 245, 175, 30);
 
         this.panelOuest.add(this.labelCouleur);
         this.panelOuest.add(this.btnChoixCouleur);
@@ -187,8 +199,13 @@ public class ClientGUI extends JFrame implements ActionListener,WindowListener
 
         this.btnChoixImage = new JButton("Choisir une image");
         this.btnChoixImage.addActionListener(this);
-        this.btnChoixImage.setBounds(280, 230, 200, 25);
+        this.btnChoixImage.setBounds(305, 230, 175, 25);
 
+        this.btnRecadrage = new JButton("Recadrer l'image");
+        this.btnRecadrage.addActionListener(this);
+        this.btnRecadrage.setBounds(305, 265, 175, 25);
+
+        this.panelOuest.add(this.btnRecadrage);
         this.panelOuest.add(this.labelImage);
         this.panelOuest.add(this.btnChoixImage);
 
@@ -205,13 +222,35 @@ public class ClientGUI extends JFrame implements ActionListener,WindowListener
         //Création du bouton de lancement
         this.btnLancer = new JButton("Lancer la partie");
         this.btnLancer.addActionListener(this);
-        this.btnLancer.setBounds(20, 470, 460, 50);
+        this.btnLancer.setBounds(20, 430, 460, 60);
 
         this.panelOuest.add(this.btnLancer);
 
+        //Création du bouton de tuto
+        this.btnTuto = new JButton("Comment jouer ?");
+        this.btnTuto.addActionListener(this);
+        this.btnTuto.setBounds(20, 500, 460, 25);
+
+        this.panelOuest.add(this.btnTuto);
+
+        //Création des radiobtn
+        this.rbCouleur = new JRadioButton();
+        this.rbCouleur.setBounds(20, 230, 25, 60);
+        this.rbCouleur.setSelected(true);
+
+        this.rbImage = new JRadioButton();
+        this.rbImage.setBounds(280, 230, 25, 60);
+
+        ButtonGroup buttonGroup = new ButtonGroup();
+        buttonGroup.add(this.rbCouleur);
+        buttonGroup.add(this.rbImage);
+
+        this.panelOuest.add(this.rbCouleur);
+        this.panelOuest.add(this.rbImage);
+
         //Création label erreur
         this.labelErreur = new JLabel("");
-        this.labelErreur.setBounds(20, 450, 460, 20);
+        this.labelErreur.setBounds(20, 410, 460, 20);
 
         this.panelOuest.add(this.labelErreur);
 
@@ -301,6 +340,39 @@ public class ClientGUI extends JFrame implements ActionListener,WindowListener
         {
             new ChoixCouleur(this.labelCouleur);
         }
+
+        if(e.getSource() == this.btnChoixImage)
+        {
+            JFileChooser fileChooser = new JFileChooser();
+            //Filter for jpeg files.
+            FileNameExtensionFilter imageFilter = new FileNameExtensionFilter("Images", ImageIO.getReaderFormatNames());
+            fileChooser.addChoosableFileFilter(imageFilter);
+            fileChooser.setAcceptAllFileFilterUsed(false);
+            
+            int result = fileChooser.showOpenDialog(null);
+            if (result == JFileChooser.APPROVE_OPTION) {
+                // Charger l'image sélectionnée
+                File selectedFile = fileChooser.getSelectedFile();
+                try {
+                    this.image = ImageIO.read(selectedFile);
+                    BufferedImage selectedImage = image.getSubimage(0, 0, 200, 200);
+                    this.labelImage.setIcon(new ImageIcon(selectedImage));
+
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
+
+        if(e.getSource() == this.btnRecadrage)
+        {
+            new SelectionImage(this.image, labelImage);
+        }
+
+        if(e.getSource() == this.btnTuto)
+        {
+
+        }
         
     }
 
@@ -373,9 +445,9 @@ public class ClientGUI extends JFrame implements ActionListener,WindowListener
                     int pos2=sentence.indexOf('|');
                     int pos3=sentence.indexOf('#');
 
-                    int x=Integer.parseInt(sentence.substring(6, pos1));
-                    int y=Integer.parseInt(sentence.substring(pos1+1, pos2));
-                    int id=Integer.parseInt(sentence.substring(pos2+1, pos3));
+                    int x = Integer.parseInt(sentence.substring(6, pos1));
+                    int y = Integer.parseInt(sentence.substring(pos1+1, pos2));
+                    int id = Integer.parseInt(sentence.substring(pos2+1, pos3));
                     boolean bool = Boolean.parseBoolean(sentence.substring(pos3+1, sentence.length())); 
 
                     if(id!=clientJoueur.getId())
@@ -393,20 +465,6 @@ public class ClientGUI extends JFrame implements ActionListener,WindowListener
                   
                     if(id == clientJoueur.getId())
                     {
-                        /*int response=JOptionPane.showConfirmDialog(null,"You die. Do you want to try again ?","Mat.io",JOptionPane.OK_CANCEL_OPTION);
-                        if(response==JOptionPane.OK_OPTION)
-                        {
-                            //client.closeAll();
-                            setVisible(false);
-                            dispose();
-                            
-                            new ClientGUI();
-                        }
-                        else
-                        {
-                            System.exit(0);
-                        }*/
-
                         ClientGUI.this.btnLancer.setEnabled(true);
 
                         ClientGUI.this.boardPanel.setGameStatus(false);

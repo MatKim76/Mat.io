@@ -2,6 +2,8 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
+import java.util.Collections;
+
 import javax.swing.JPanel;
 /*
  * GameBoardPanel.java
@@ -45,20 +47,11 @@ public class GameBoardPanel extends JPanel {
         //t.start();
     }
 
-    public void paintComponent(Graphics gr) {
+    public void paintComponent(Graphics gr) 
+    {
         super.paintComponent(gr);
         Graphics2D g=(Graphics2D)gr;
  
-        //g.setColor(Color.BLACK);
-        //g.fillRect(0,0, getWidth(),getHeight());
-        
-        //g.setColor(Color.GREEN);
-        //g.fillRect(70,50, getWidth()-100,getHeight());
-        //g.drawImage(new ImageIcon("Images/bg.jpg").getImage(),70,50,null);
-        //g.setColor(Color.YELLOW);
-        //g.setFont(new Font("Comic Sans MS",Font.BOLD,25));
-        //g.drawString("Tanks 2D Multiplayers Game",255,30);
-
         if(gameStatus) 
         {
             // Récupérer la position du joueur
@@ -81,6 +74,9 @@ public class GameBoardPanel extends JPanel {
                 g.setColor(Color.BLUE);
                 g.drawRect(posX - 5, posY - 5, joueur.getTaille() + 10, joueur.getTaille() + 10);
             }
+
+            g.setColor(Color.BLACK);
+            g.drawRect(posX, posY, joueur.getTaille(), joueur.getTaille());
         
             // Dessiner les autres éléments de la carte en ajustant leurs coordonnées de dessin
             for(int i = 1; i<joueurs.size(); i++)  
@@ -99,6 +95,9 @@ public class GameBoardPanel extends JPanel {
                         g.setColor(Color.BLUE);
                         g.drawRect(dessinX - 5, dessinY - 5, joueurs.get(i).getTaille() + 10, joueurs.get(i).getTaille() + 10);
                     }
+
+                    g.setColor(Color.BLACK);
+                    g.drawRect(dessinX, dessinY, joueurs.get(i).getTaille(), joueurs.get(i).getTaille());
                 }
             }
 
@@ -128,16 +127,26 @@ public class GameBoardPanel extends JPanel {
             g.drawString("kill : " + this.joueur.getKill(), 0, 35);
 
             //affichage du leaderboard
-            /*joueurs.sort(null);
-            for (int i=0 ; i < joueurs.size() ; i++)
+            ArrayList<Joueur> lst = new ArrayList<Joueur>();
+            lst.add(this.joueur);
+
+            for(int i = 0; i < joueurs.size(); i++)
             {
-                if(joueurs.get(i)!=null)
+                if(joueurs.get(i) != null)
+                    lst.add(joueurs.get(i));
+            }
+
+            Collections.sort(lst);
+
+            for (int i=0 ; i < lst.size() ; i++)
+            {
+                if(lst.get(i)!=null)
                 {
                     if(i > 10 ) break;
 
-                    g.drawString( (i+1) + ". " + joueurs.get(i).toString(), this.getWidth() - 100, 20 + i*15);
+                    g.drawString( (i+1) + ". " + lst.get(i).toString(), this.getWidth() - 150, 20 + i*15);
                 }
-            }*/
+            }
 
             // affichage de charge bouclier
             g.setColor(Color.BLUE);

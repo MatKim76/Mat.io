@@ -127,9 +127,11 @@ public class Joueur implements Comparable<Joueur>, Serializable
 	@Override
 	public int compareTo(Joueur j) 
 	{
-		if(this.score == j.getScore()) return 0;
-		else if(this.score > j.getScore()) return -1; //c'est inversé mais tkt
-		else return 1;
+		if(this.score > j.getScore()) return -1; 
+		if(this.score < j.getScore()) return 1;
+
+		if(this.id > j.getId()) return -1;
+		return 1;
 	}
 
 	public boolean equals(Joueur j)
