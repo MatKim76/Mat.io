@@ -119,6 +119,7 @@ public class Server extends Thread {
                 clients.add(new ClientInfo(writer, nom, x, y, couleur, false));
             }
             
+            //TODO: synchroniser les scores et kill via serveur ?
             else if(sentence.startsWith("Update"))
             {
                 int pos1=sentence.indexOf(',');
