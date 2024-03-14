@@ -33,6 +33,7 @@ public class MessageClient
         message="Remove"+id;
         return message;
     }
+
     public String ExitMessagePacket(int id)
     {
         message="Exit"+id;
@@ -42,6 +43,12 @@ public class MessageClient
     public String UpdatePacket (int x,int y,int id, boolean shield)
     {
         message="Update"+x+","+y+"|"+id + "#"+shield ;
+        return message;
+    }
+
+    public String RemoveBonus(int id)
+    {
+        message = "DestroyBonus" + id;
         return message;
     }
 }

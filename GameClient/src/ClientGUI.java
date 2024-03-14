@@ -41,8 +41,8 @@ public class ClientGUI extends JFrame implements ActionListener,WindowListener
     private JButton btnServeur;
 	private JButton btnSearch;
     
-    int width=790,height=580;
-    boolean isRunning=true;
+    int width = 790,height = 580;
+    boolean isRunning = true;
     private GameBoardPanel boardPanel;
     
     private SoundManger soundManger;
@@ -448,7 +448,7 @@ public class ClientGUI extends JFrame implements ActionListener,WindowListener
                     int id = Integer.parseInt(sentence.substring(pos4+1, sentence.length()));
 
                     if(id !=clientJoueur.getId())
-                        boardPanel.registerNewTank( new Joueur(id, nom, ChoixCouleur.getColorFromString(ChoixCouleur.COULEURS[index]), index ));
+                        boardPanel.addJoueur( new Joueur(id, nom, ChoixCouleur.getColorFromString(ChoixCouleur.COULEURS[index]), index ));
 
                     System.out.println("new Client " + id);
                 }   
@@ -465,9 +465,9 @@ public class ClientGUI extends JFrame implements ActionListener,WindowListener
 
                     if(id!=clientJoueur.getId())
                     {
-                        boardPanel.getTank(id).setX(x);
-                        boardPanel.getTank(id).setY(y);
-                        boardPanel.getTank(id).setBouclier(bool);
+                        boardPanel.getJoueur(id).setX(x);
+                        boardPanel.getJoueur(id).setY(y);
+                        boardPanel.getJoueur(id).setBouclier(bool);
                         boardPanel.repaint();
                     }
                     
@@ -488,7 +488,7 @@ public class ClientGUI extends JFrame implements ActionListener,WindowListener
                     }
                     else
                     {
-                        boardPanel.removeTank(id);
+                        boardPanel.removeJoueur(id);
                     }
                 }
                 else if(sentence.startsWith("Exit"))
@@ -497,9 +497,34 @@ public class ClientGUI extends JFrame implements ActionListener,WindowListener
                   
                     if(id!=clientJoueur.getId())
                     {
-                        boardPanel.removeTank(id);
+                        boardPanel.removeJoueur(id);
                     }
-                }   
+                }
+                else if(sentence.startsWith("AddBonus"))
+                {
+                    int pos1 = sentence.indexOf('[');
+                    int pos2 = sentence.indexOf(',');
+                    int pos3 = sentence.indexOf(']');
+                    int pos4 = sentence.indexOf('|');
+
+                    int id = Integer.parseInt(sentence.substring(8, pos1));
+                    int x  = Integer.parseInt(sentence.substring(pos1+1, pos2));
+                    int y  = Integer.parseInt(sentence.substring(pos2+1, pos3));
+                    int red   = Integer.parseInt(sentence.substring(pos3+1, pos4-6));
+                    int green = Integer.parseInt(sentence.substring(pos3+4, pos4-3));
+                    int blue  = Integer.parseInt(sentence.substring(pos3+7, pos4));
+                    int taille = Integer.parseInt(sentence.substring(pos4+1, sentence.length()));
+
+                    if(id !=clientJoueur.getId())
+                        boardPanel.addBonus( new Bonus(id, x, y, new Color(red, green, blue), taille));
+                }  
+                else if(sentence.startsWith("DestroyBonus"))
+                {
+                    int id =Integer.parseInt(sentence.substring(12));
+
+                    boardPanel.removeBonus(id);
+                }
+                
             }
            
             try {

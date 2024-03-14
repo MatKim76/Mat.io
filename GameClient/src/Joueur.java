@@ -186,11 +186,11 @@ public class Joueur implements Comparable<Joueur>, Serializable
 						System.out.println("kill");
 					}
                     
-                    try {
+                    /*try {
                         Thread.sleep(200);
                     } catch (InterruptedException ex) {
                         ex.printStackTrace();
-                    }
+                    }*/
 
                     return true;
                 }
@@ -199,7 +199,7 @@ public class Joueur implements Comparable<Joueur>, Serializable
         return false;
     }
 
-	//TODO faire une classe privée pour les coliision ?
+	//TODO revoir les collisions
 
 	private class DetecteurCollision extends Thread 
 	{

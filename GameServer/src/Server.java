@@ -21,7 +21,6 @@ import java.util.ArrayList;
  */
 
 import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
 
 /**
  *
@@ -34,6 +33,8 @@ public class Server extends Thread {
      */
     
     private ArrayList<ClientInfo> clients;
+    //TODO: rajouter une liste de bonus et envoyer l'entierete aux nouveaux joueurs
+
     private ServerSocket serverSocket;
     private int serverPort=11111;
     
@@ -48,14 +49,17 @@ public class Server extends Thread {
     public Server() throws SocketException 
     {
         this.clients = new ArrayList<ClientInfo>();
+
         this.protocol = new MessageServer();
         this.images = new ArrayList<BufferedImage>();
 
         try {
-            serverSocket=new ServerSocket(serverPort);
+            serverSocket = new ServerSocket(serverPort);
         } catch (IOException ex) {
             ex.printStackTrace();
         }
+
+        new GenerateurBonus(this).start();
     }
         
     public void run()
@@ -128,7 +132,7 @@ public class Server extends Thread {
 
                 if(clients.size() > id-1)
                 {
-                    if( clients.get(id-1)!=null)//TODO surement des probleme avec le -1
+                    if( clients.get(id-1)!=null)//TODO: surement des probleme avec le -1
                     {
                         clients.get(id-1).setPosX(x);
                         clients.get(id-1).setPosY(y);
@@ -165,6 +169,17 @@ public class Server extends Thread {
                 }
                 if(clients.get(id-1)!=null)
                     clients.set(id-1,null);
+            }
+
+            else if(sentence.startsWith("DestroyBonus"))
+            {
+                //int id = Integer.parseInt(sentence.substring(12));
+
+                try {
+                    BroadCastMessage(sentence);
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
             }
 
             else if(sentence.startsWith("Image"))

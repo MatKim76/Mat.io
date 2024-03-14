@@ -27,6 +27,7 @@ public class Client {
     private MessageClient protocol;
 
     private static Client client;
+    
     private Client() throws IOException 
     {
         protocol = new MessageClient();

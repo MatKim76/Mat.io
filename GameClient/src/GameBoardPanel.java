@@ -27,27 +27,34 @@ public class GameBoardPanel extends JPanel {
     private Joueur joueur;
     private int width=609;
     private int height=523;
+
+    private static Joueur j;
+
     private static ArrayList<Joueur> joueurs;
+    private static ArrayList<Bonus> bonus;
+
     private boolean gameStatus;
 
     public GameBoardPanel(Joueur joueur,Client client, boolean gameStatus) 
     {
         this.joueur = joueur;
         this.gameStatus = gameStatus;
+
+        j = this.joueur;
+
         setSize(width,height);
         setBounds(-50,0,width,height);
         addKeyListener(new InputManager(joueur));
         setFocusable(true);
         
-        joueurs = new ArrayList<Joueur>(50);
+        joueurs = new ArrayList<Joueur>(100);
+        bonus = new ArrayList<Bonus>(100);
         
-        for(int i=0;i<100;i++)
+        for(int i = 0;i < 100;i++)
         {
             joueurs.add(null);
+            bonus.add(null);
         }
-        
-        //Thread t = new Thread( new CollisionJoueur(joueur, joueurs) );
-        //t.start();
     }
 
     public void paintComponent(Graphics gr) 
@@ -123,15 +130,21 @@ public class GameBoardPanel extends JPanel {
             }
 
             // Dessin des bonus
-            /*for (Bonus b : this.ctrl.getBonus()) 
+            for (int i = 0; i < bonus.size(); i++) 
             {
-                int dessinX = joueurDessinX + b.getX();
-                int dessinY = joueurDessinY + b.getY();
-        
-                // Dessiner le bonus à sa nouvelle position calculée
-                g.setColor(b.getCouleur());
-                g.fillRect(dessinX, dessinY, b.getTaille(), b.getTaille());
-            }*/
+                if(bonus.get(i) != null)
+                {
+                    if(bonus.get(i).isVisible())
+                    {
+                        int dessinX = joueurDessinX + bonus.get(i).getX();
+                        int dessinY = joueurDessinY + bonus.get(i).getY();
+                
+                        // Dessiner le bonus à sa nouvelle position calculée
+                        g.setColor(bonus.get(i).getCouleur());
+                        g.fillRect(dessinX, dessinY, bonus.get(i).getTaille(), bonus.get(i).getTaille());
+                    }
+                }
+            }
         
             // Dessiner d'autres éléments de la carte (bordures, etc.) en ajustant leurs coordonnées de dessin
             int dessinBordureX = joueurDessinX;
@@ -177,20 +190,29 @@ public class GameBoardPanel extends JPanel {
         repaint();
     }
 
-    //renommer les machins
-    public void registerNewTank(Joueur newTank)
+    public void addJoueur(Joueur j)
     {
-        joueurs.set(newTank.getId(),newTank);
+        joueurs.set(j.getId(),j);
     }
 
-    public void removeTank(int tankID)
+    public void removeJoueur(int id)
     {
-        joueurs.set(tankID,null);//TODO regler probleme quand un joueur doit etre enlever mais ne l ai pas
+        joueurs.set(id,null);//TODO regler probleme quand un joueur doit etre enlever mais ne l ai pas
     }
 
-    public Joueur getTank(int id)
+    public Joueur getJoueur(int id)
     {
         return joueurs.get(id);
+    }
+
+    public void addBonus(Bonus b)
+    {
+        bonus.set(b.getId(), b);
+    }
+
+    public void removeBonus(int id)
+    {
+        bonus.set(id, null);
     }
 
     public void setGameStatus(boolean status)
@@ -201,5 +223,15 @@ public class GameBoardPanel extends JPanel {
     public static ArrayList<Joueur> getClients()
     {
         return joueurs;
+    }
+
+    public static ArrayList<Bonus> getBonus()
+    {
+        return bonus;
+    }
+
+    public static Joueur getJoueur()
+    {
+        return j;
     }
 }

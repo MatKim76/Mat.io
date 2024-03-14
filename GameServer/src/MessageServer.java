@@ -23,16 +23,17 @@ public class MessageServer {
         message="ID"+id;
         return message;
     }
-    /*public String NewClientPacket(int x,int y,int dir,int id)
-    {
-        message="NewClient"+x+","+y+"-"+dir+"|"+id;
-        return message;   
-    }*/
 
     public String NewClientPacket(String nom, int x, int y, int couleur, int id)
     {
         message="NewClient" + nom + "[" + x + "," + y + "]" + couleur + "|" + id;
         return message;   
+    }
+
+    public String newBonus(Bonus b)
+    {
+        message = "AddBonus" + b.getId() + "[" + b.getX() + "," + b.getY() + "]" + b.getNumCouleur() + "|" + b.getTaille();
+        return message;
     }
 
 
